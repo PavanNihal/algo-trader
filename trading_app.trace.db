@@ -1,0 +1,157 @@
+2024-11-23 19:19:06.309760+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "NIFTY50" not found (this database is empty); SQL statement:
+SELECT symbol, name FROM Nifty50 [42104-224]
+2024-11-23 19:19:06.873966+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "NIFTY50" not found (this database is empty); SQL statement:
+INSERT INTO Nifty50 (symbol, name) VALUES (?, ?) [42104-224]
+2024-11-23 21:08:44.715014+05:30 database: wrong user or password; user: "SA"
+org.h2.message.DbException: Wrong user name or password [28000-224]
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.get(DbException.java:188)
+	at org.h2.engine.Engine.openSession(Engine.java:154)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:343)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:125)
+	at org.h2.util.JdbcUtils.getConnection(JdbcUtils.java:288)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:811)
+	at org.h2.server.web.WebApp.login(WebApp.java:1039)
+	at org.h2.server.web.WebApp.process(WebApp.java:227)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:177)
+	at org.h2.server.web.WebThread.process(WebThread.java:154)
+	at org.h2.server.web.WebThread.run(WebThread.java:103)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	... 16 more
+2024-11-23 21:10:56.643687+05:30 database: wrong user or password; user: "SA"
+org.h2.message.DbException: Wrong user name or password [28000-224]
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.get(DbException.java:188)
+	at org.h2.engine.Engine.openSession(Engine.java:154)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:343)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:125)
+	at org.h2.util.JdbcUtils.getConnection(JdbcUtils.java:288)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:811)
+	at org.h2.server.web.WebApp.test(WebApp.java:978)
+	at org.h2.server.web.WebApp.process(WebApp.java:242)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:177)
+	at org.h2.server.web.WebThread.process(WebThread.java:154)
+	at org.h2.server.web.WebThread.run(WebThread.java:103)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name or password [28000-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	... 16 more
+2024-11-23 22:13:58.975701+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "TOKEN CHARACTER VARYING(255)": "'{""email"":""cpnihal2011@gmail.com"",""exchanges"":[""BSE"",""BFO"",""NSE"",""NFO""],""product... (616)"; SQL statement:
+INSERT INTO auth_tokens (token) VALUES (?) [22001-224]
+2024-11-23 22:18:22.573746+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]describe AUTH_TOKENS"; expected "DELETE, DROP"; SQL statement:
+describe AUTH_TOKENS [42001-224]
+2024-11-23 22:18:34.396278+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]describe table AUTH_TOKENS"; expected "DELETE, DROP"; SQL statement:
+describe table AUTH_TOKENS [42001-224]
+2024-11-23 22:20:48.096899+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "TOKEN CHARACTER VARYING(500)": "'{""email"":""cpnihal2011@gmail.com"",""exchanges"":[""BSE"",""BFO"",""NSE"",""NFO""],""product... (616)"; SQL statement:
+INSERT INTO auth_tokens (token) VALUES (?) [22001-224]
+2024-11-24 11:25:16.465369+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 11:26:07.975402+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 11:26:08.451216+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "NAME" not found; SQL statement:
+SELECT symbol, name FROM Nifty50 [42122-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
+	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
+	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
+	at org.h2.command.query.Query.prepare(Query.java:218)
+	at org.h2.command.Parser.prepareCommand(Parser.java:489)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
+	at database.DatabaseManager.getNifty50FromDB(DatabaseManager.java:197)
+	at UITest.<init>(UITest.java:22)
+	at UITest.lambda$1(UITest.java:65)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:771)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:722)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:716)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:741)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+2024-11-24 12:18:06.923876+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:20:08.047847+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:22:14.931893+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:23:46.307131+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:26:38.973639+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:28:04.663453+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 12:30:10.975541+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 18:53:40.896971+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 18:55:23.044466+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 18:57:31.142607+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) [*]ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type)"; SQL statement:
+INSERT INTO instruments (name, exchange, isin, instrument_type, instrument_key, lot_size, freeze_quantity, exchange_token, tick_size, trading_symbol, short_name, qty_multiplier, security_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), exchange=VALUES(exchange), isin=VALUES(isin), instrument_type=VALUES(instrument_type), instrument_key=VALUES(instrument_key), lot_size=VALUES(lot_size), freeze_quantity=VALUES(freeze_quantity), exchange_token=VALUES(exchange_token), tick_size=VALUES(tick_size), trading_symbol=VALUES(trading_symbol), short_name=VALUES(short_name), qty_multiplier=VALUES(qty_multiplier), security_type=VALUES(security_type) [42000-224]
+2024-11-24 19:06:24.213269+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "symbol" not found [42122-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3492)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:301)
+	at database.DatabaseManager.getStocksFromDB(DatabaseManager.java:222)
+	at database.DatabaseManager.loadStocks(DatabaseManager.java:144)
+	at UITest.main(UITest.java:61)
+2024-11-24 19:11:21.553554+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "symbol" not found [42122-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3492)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:301)
+	at database.DatabaseManager.getStocksFromDB(DatabaseManager.java:222)
+	at database.DatabaseManager.loadStocks(DatabaseManager.java:144)
+	at UITest.main(UITest.java:61)
+2024-11-24 22:33:53.873374+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "I" not found; SQL statement:
+SELECT n.symbol, i.* FROM Nifty50 n " +
+                "JOIN instruments i ON n.symbol = i.trading_symbol [42102-224]
