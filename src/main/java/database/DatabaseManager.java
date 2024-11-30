@@ -35,7 +35,7 @@ public class DatabaseManager {
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(
                     "CREATE TABLE IF NOT EXISTS auth_tokens (" +
-                    "token VARCHAR(255) PRIMARY KEY, " +
+                    "token VARCHAR(500) PRIMARY KEY, " +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                     ")"
                 );
