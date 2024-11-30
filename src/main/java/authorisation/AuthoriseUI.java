@@ -13,13 +13,22 @@ import java.util.function.Consumer;
 
 import database.DatabaseManager;
 import org.json.JSONObject;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
+import com.sun.net.httpserver.HttpsServer;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 
 public class AuthoriseUI {
     public static final String UPSTOX_LOGIN_LINK = "https://api.upstox.com/v2/login/authorization/dialog";
     public static final String UPSTOX_ACCESS_TOKEN_LINK = "https://api.upstox.com/v2/login/authorization/token";
     public static final String API_KEY = "97a70ebf-7347-4222-9de1-8efc4ea3a318";
-    public static final String REDIRECT_URI = "http://localhost:8100/login";
+    public static final String REDIRECT_URI = "https://localhost:8100/login";
     public static String SECRET_KEY;
+    public static String KEYSTORE_PASSWORD;
 
     private Consumer<String> tokenCallback;
 
@@ -30,6 +39,15 @@ public class AuthoriseUI {
         } catch (IOException e) {
             System.err.println("Error reading secret.txt file: " + e.getMessage());
             SECRET_KEY = null;
+        }
+    }
+
+    public static void loadKeystorePassword() {
+        try {
+            KEYSTORE_PASSWORD = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("keystore_password.txt"))).trim();
+        } catch (IOException e) {
+            System.err.println("Error reading keystore_password.txt file: " + e.getMessage());
+            KEYSTORE_PASSWORD = null;
         }
     }
 
@@ -102,7 +120,37 @@ public class AuthoriseUI {
 
     private void startLocalServer() {
         try {
-            com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress(8100), 0);
+            if(KEYSTORE_PASSWORD == null) {
+                loadKeystorePassword();
+            }
+            if(KEYSTORE_PASSWORD == null) {
+                throw new RuntimeException("Keystore password not found");
+            }
+
+            // Load the keystore
+            KeyStore ks = KeyStore.getInstance("JKS");
+            FileInputStream fis = new FileInputStream("keystore.jks");
+            ks.load(fis, KEYSTORE_PASSWORD.toCharArray());
+
+            // Setup the key manager factory
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(ks, KEYSTORE_PASSWORD.toCharArray());
+
+            // Setup the trust manager factory
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(ks);
+
+            // Setup the HTTPS context and parameters
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            
+            HttpsServer server = HttpsServer.create(new java.net.InetSocketAddress(8100), 0);
+            server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+                public void configure(HttpsParameters params) {
+                    params.setSSLParameters(sslContext.getDefaultSSLParameters());
+                }
+            });
+
             server.createContext("/login", (exchange -> {
                 String query = exchange.getRequestURI().getQuery();
                 
@@ -122,9 +170,9 @@ public class AuthoriseUI {
             
             server.setExecutor(null);
             server.start();
-            System.out.println("Local server started on port 8100");
+            System.out.println("Local HTTPS server started on port 8100");
             
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
