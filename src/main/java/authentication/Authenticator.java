@@ -2,7 +2,7 @@ package authentication;
 
 public interface Authenticator {
 
-    enum Status {
+    public enum Status {
         SUCCESS,
         FAILURE
     }

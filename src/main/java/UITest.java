@@ -7,6 +7,7 @@ import database.DatabaseManager;
 import model.Interval;
 import model.Stock;
 import ui.DetailsPage;
+import ui.MainFrame;
 import ui.MainPanel;
 
 import java.awt.*;
@@ -79,15 +80,10 @@ public class UITest extends JFrame {
             e.printStackTrace();
         }
 
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.initDatabase();
-        dbManager.loadStocks();
-        dbManager.loadNiftyList();
-
         // Create and show the UI on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
-            UITest ui = new UITest();
-            ui.setVisible(true);
+            MainFrame mainFrame = new MainFrame();
+            mainFrame.setVisible(true);
         });
     }
 }
