@@ -1,80 +1,61 @@
 package ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.util.function.Consumer;
 
 import authentication.*;
 import authentication.Authenticator.Status;
 import database.DatabaseManager;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
-public class LoginPage extends JPanel {
+public class LoginPage extends VBox {
 
     private static final String LOGIN_MESSAGE = """
-            
-            """;
+    Login with your preferred broker. 
+    You will be redirected to the broker's login page.
+    Once the authentication is succesfull, return this application to continue.
+    """;
+    private Consumer<Status> authenticationListener;
+
+    
 
     public LoginPage() {
-        super(new BorderLayout());
+        super(20); // spacing between elements
+        setAlignment(Pos.CENTER);
+        setPrefWidth(400);
+        setPrefHeight(300);
 
-        // Create a panel for centered content with vertical BoxLayout
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        
-        // Add welcome message
-        JLabel welcomeLabel = new JLabel("Welcome to Algo Trader");
-        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(welcomeLabel);
-        
-        // Add some vertical spacing
-        centerPanel.add(Box.createVerticalStrut(20));
-        
-        // Create login button
-        JButton loginButton = new JButton("Login to Upstox");
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(loginButton);
-        
-        // Add status labels (initially invisible)
-        JLabel successLabel = new JLabel("Login Successful!");
-        successLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Welcome message
+        Label welcomeLabel = new Label(LOGIN_MESSAGE);
+        welcomeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;");
+        welcomeLabel.setAlignment(Pos.CENTER);
+
+        // Login button
+        Button loginButton = new Button("Login to Upstox");
+        loginButton.setPrefWidth(200);
+
+        // Status labels
+        Label successLabel = new Label("Login Successful!");
+        successLabel.setStyle("-fx-text-fill: green;");
         successLabel.setVisible(false);
-        centerPanel.add(successLabel);
 
-        JLabel failureLabel = new JLabel("Authentication failed. Please try logging in again.");
-        failureLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Label failureLabel = new Label("Authentication failed. Please try logging in again.");
+        failureLabel.setStyle("-fx-text-fill: red;");
         failureLabel.setVisible(false);
-        centerPanel.add(failureLabel);
-        
-        JLabel fetchingLabel = new JLabel("Fetching Stocks...");
-        fetchingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        Label fetchingLabel = new Label("Fetching Stocks...");
+        fetchingLabel.setStyle("-fx-text-fill: blue;");
         fetchingLabel.setVisible(false);
-        centerPanel.add(fetchingLabel);
 
-        // Create a wrapper panel to center vertically
-        JPanel verticalWrapper = new JPanel();
-        verticalWrapper.setLayout(new BoxLayout(verticalWrapper, BoxLayout.Y_AXIS));
-        verticalWrapper.add(Box.createVerticalGlue());
-        verticalWrapper.add(centerPanel);
-        verticalWrapper.add(Box.createVerticalGlue());
+        // Add elements to the VBox
+        getChildren().addAll(welcomeLabel, loginButton, successLabel, failureLabel, fetchingLabel);
 
-        // Create a wrapper panel to center horizontally
-        JPanel horizontalWrapper = new JPanel();
-        horizontalWrapper.setLayout(new BoxLayout(horizontalWrapper, BoxLayout.X_AXIS));
-        horizontalWrapper.add(Box.createHorizontalGlue());
-        horizontalWrapper.add(verticalWrapper);
-        horizontalWrapper.add(Box.createHorizontalGlue());
+        // Login button action
+        loginButton.setOnAction(e -> {
+            loginButton.setDisable(true);
 
-        add(horizontalWrapper, BorderLayout.CENTER);
-        
-        // Add login button action
-        loginButton.addActionListener(e -> {
-            loginButton.setEnabled(false);
-            
             DatabaseManager dbManager = DatabaseManager.getInstance();
             UpstoxAuthImpl authenticator = new UpstoxAuthImpl();
 
@@ -85,14 +66,28 @@ public class LoginPage extends JPanel {
 
                     dbManager.loadStocks();
                     dbManager.loadNiftyList();
+                    
+                    // Notify the authentication listener
+                    if (authenticationListener != null) {
+                        authenticationListener.accept(status);
+                    }
                 } else {
                     failureLabel.setVisible(true);
-                    loginButton.setEnabled(true);
+                    loginButton.setDisable(false);
+                    
+                    // Notify the authentication listener of failure
+                    if (authenticationListener != null) {
+                        authenticationListener.accept(status);
+                    }
                 }
             });
-            
+
             dbManager.initDatabase();
             authenticator.authenticate();
         });
+    }
+
+    public void setAuthenticationListener(Consumer<Status> listener) {
+        this.authenticationListener = listener;
     }
 }

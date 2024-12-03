@@ -1,32 +1,41 @@
 package ui;
 
-import java.awt.CardLayout;
+import authentication.Authenticator.Status;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+public class MainFrame extends StackPane {
 
-public class MainFrame extends JFrame {
+    private LoginPage loginPage;
+    private HomePanel homePanel;
 
-    private static final String LOGIN_PAGE = "LOGIN";
-    private static final String MAIN_PAGE = "MAIN";
-
-    
-    private CardLayout cardLayout;
-    private JPanel contentPanel;
-    
     public MainFrame() {
+        loginPage = new LoginPage();
+        homePanel = new HomePanel();
 
-        setTitle("Algo Trader");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 800);
+        // Add both pages to the StackPane
+        getChildren().addAll(loginPage, homePanel);
 
-        cardLayout = new CardLayout();
-        contentPanel = new JPanel(cardLayout);
-        add(contentPanel);
+        showLoginPage();
 
-        contentPanel.add(new LoginPage(), LOGIN_PAGE);
-        contentPanel.add(new HomePanel(), MAIN_PAGE);
-        
-        cardLayout.show(contentPanel, LOGIN_PAGE);
+        // Register authentication listener
+        loginPage.setAuthenticationListener(status -> {
+            if (status == Status.SUCCESS) {
+                showHomePage();
+            }
+        });
+
+        // Create the scene
+        new Scene(this, 1000, 800);
+    }
+
+    public void showLoginPage() {
+        loginPage.setVisible(true);
+        homePanel.setVisible(false);
+    }
+
+    public void showHomePage() {
+        loginPage.setVisible(false);
+        homePanel.setVisible(true);
     }
 }

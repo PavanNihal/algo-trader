@@ -1,23 +1,39 @@
-import javax.swing.*;
-
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 import ui.MainFrame;
 
 import java.sql.SQLException;
 
+public class UITest extends Application {
 
-public class UITest extends JFrame {
-
-    public static void main(String[] args) {
+    @Override
+    public void start(Stage primaryStage) {
         try {
+            // Start H2 web server
             org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
+            
+            // Initialize UI
+            MainFrame mainFrame = new MainFrame();
+            primaryStage.setTitle("Algo Trader");
+            primaryStage.setScene(mainFrame.getScene());
+            primaryStage.show();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.exit();
         }
+    }
 
-        // Create and show the UI on the Event Dispatch Thread
-        SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame();
-            mainFrame.setVisible(true);
-        });
+    @Override
+    public void stop() {
+        // Cleanup when application closes
+        Platform.exit();
+        System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
