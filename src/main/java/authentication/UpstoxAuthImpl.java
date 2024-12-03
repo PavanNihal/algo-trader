@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-
+import java.sql.SQLException;
 import java.awt.Desktop;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -42,9 +42,20 @@ public class UpstoxAuthImpl implements Authenticator {
     @Override
     public void authenticate() {
         try {
+            DatabaseManager dbManager = DatabaseManager.getInstance();
+            dbManager.getToken();
+            listener.onComplete(Status.SUCCESS);
+            return;
+        }
+        catch(AccessTokenExpiredException | SQLException e) {
+            System.err.println("Token expired, starting authorization");
+        }
+        
+        try {            
             loadSecretKey();
             loadKeystorePassword();
         }
+        
         catch(IOException e) {
             System.err.println("Error reading secret.txt file: " + e.getMessage());
             SECRET_KEY = null;
