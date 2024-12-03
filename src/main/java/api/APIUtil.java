@@ -9,6 +9,8 @@ import com.upstox.api.GetMarketQuoteOHLCResponse;
 import com.upstox.api.MarketQuoteOHLC;
 import com.upstox.auth.OAuth;
 
+import authentication.AccessTokenExpiredException;
+import java.sql.SQLException;
 import database.DatabaseManager;
 
 import com.upstox.Configuration;
@@ -24,8 +26,13 @@ public class APIUtil {
 
         // Configure OAuth2 access token for authorization: OAUTH2
         OAuth OAUTH2 = (OAuth) defaultClient.getAuthentication("OAUTH2");
-        String token = DatabaseManager.getInstance().getToken();
-        OAUTH2.setAccessToken(token);
+        try {
+            String token = DatabaseManager.getInstance().getToken();
+            OAUTH2.setAccessToken(token);
+        }
+        catch(AccessTokenExpiredException | SQLException e) {
+            System.err.println("Token expired, starting authorization");
+        }
 
         MarketQuoteApi apiInstance = new MarketQuoteApi();
         

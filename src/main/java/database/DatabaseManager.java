@@ -3,12 +3,9 @@ package database;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
 
-import authorisation.AuthoriseUI;
+import authentication.AccessTokenExpiredException;
+
 import model.Stock;
 import util.Scrapper;
 
@@ -78,7 +75,7 @@ public class DatabaseManager {
         }
     }
 
-    public String getToken() {
+    public String getToken() throws AccessTokenExpiredException, SQLException {
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
             Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT token, created_at FROM auth_tokens");
@@ -87,30 +84,14 @@ public class DatabaseManager {
                 Timestamp twentyFourHoursAgo = new Timestamp(System.currentTimeMillis() - (8 * 60 * 60 * 1000));
                 
                 if (createdAt.after(twentyFourHoursAgo)) {
-                    System.out.println("Using existing token created at: " + createdAt);
                     return rs.getString("token");
                 }
                 // Delete expired token
-                stmt.executeUpdate("DELETE FROM auth_tokens WHERE created_at <= DATEADD('HOUR', -8, CURRENT_TIMESTAMP())");
-                System.out.println("Token expired, requesting new one");
+                stmt.executeUpdate("DELETE FROM auth_tokens");
             }
-            
-            // No token exists or expired, start auth flow
-            System.out.println("No token found, starting authorization");
-            CompletableFuture<String> futureToken = new CompletableFuture<>();
-            AuthoriseUI auth = new AuthoriseUI();
-            auth.setTokenCallback(token -> futureToken.complete(token)); 
-            auth.openLoginPage();
-            
-            try {
-                return futureToken.get(2, TimeUnit.MINUTES);  // Wait up to 2 minutes for the token
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                System.err.println("Failed to get auth token: " + e.getMessage());
-                return null;
-            }
+            throw new AccessTokenExpiredException("Token expired");
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
     }
 

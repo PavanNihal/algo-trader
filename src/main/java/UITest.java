@@ -1,93 +1,39 @@
-import javax.swing.*;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+import ui.MainFrame;
 
-import com.upstox.api.MarketQuoteOHLC;
-
-import api.APIUtil;
-import database.DatabaseManager;
-import model.Interval;
-import model.Stock;
-import ui.DetailsPage;
-import ui.MainPanel;
-
-import java.awt.*;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
+public class UITest extends Application {
 
-public class UITest extends JFrame {
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            // Start H2 web server
+            org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
+            
+            // Initialize UI
+            MainFrame mainFrame = new MainFrame();
+            primaryStage.setTitle("Algo Trader");
+            primaryStage.setScene(mainFrame.getScene());
+            primaryStage.show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.exit();
+        }
+    }
 
-    private static final String MAIN_PAGE = "MAIN";
-    private static final String DETAIL_PAGE = "DETAIL";
-    
-    private CardLayout cardLayout;
-    private JPanel contentPanel;
-    private List<Stock> companies;
-    private Map<String, MarketQuoteOHLC> map;
-
-
-    public UITest() {
-        // Set up the frame
-        setTitle("Nifty 50 Companies");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 800);
-        
-        // Set up CardLayout
-        cardLayout = new CardLayout();
-        contentPanel = new JPanel(cardLayout);
-        add(contentPanel);
-
-        // Initialize companies and map
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        companies = dbManager.getNifty50FromDB();
-        map = APIUtil.getOHLCQuotes(companies, Interval.ONE_DAY);
-
-        // Create panels
-        DetailsPage detailsPage = new DetailsPage(() -> cardLayout.show(contentPanel, MAIN_PAGE));
-        MainPanel mainPanel = new MainPanel(companies, map);
-        
-        // Set up the stock selection listener
-        mainPanel.setStockSelectionListener((stock, marketKey) -> {
-            MarketQuoteOHLC quote = map.get(marketKey);
-            detailsPage.updateDetails(stock, quote);
-            cardLayout.show(contentPanel, DETAIL_PAGE);
-        });
-
-        // Create OK button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> dispose());
-        buttonPanel.add(okButton);
-        
-        // Create a wrapper panel for main content and button
-        JPanel mainWrapper = new JPanel(new BorderLayout());
-        mainWrapper.add(mainPanel, BorderLayout.CENTER);
-        mainWrapper.add(buttonPanel, BorderLayout.SOUTH);
-        
-        // Add panels to content panel
-        contentPanel.add(mainWrapper, MAIN_PAGE);
-        contentPanel.add(detailsPage, DETAIL_PAGE);
-        
-        // Show main page initially
-        cardLayout.show(contentPanel, MAIN_PAGE);
+    @Override
+    public void stop() {
+        // Cleanup when application closes
+        Platform.exit();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
-        try {
-            org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.initDatabase();
-        dbManager.loadStocks();
-        dbManager.loadNiftyList();
-
-        // Create and show the UI on the Event Dispatch Thread
-        SwingUtilities.invokeLater(() -> {
-            UITest ui = new UITest();
-            ui.setVisible(true);
-        });
+        launch(args);
     }
 }
