@@ -25,3 +25,6 @@ trading_app.trace.db
 secret.txt
 keystore.jks
 keystore_password.txt
+
+# Local git config
+.git/config
