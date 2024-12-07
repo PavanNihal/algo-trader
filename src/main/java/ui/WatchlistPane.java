@@ -18,57 +18,95 @@ import javafx.collections.ObservableList;
 import model.LiveStock;
 
 public class WatchlistPane extends SplitPane {
-    private ListView<String> watchlistsView;
-    private ObservableList<LiveStock> stocksData;
     private DatabaseManager dbManager;
 
     public WatchlistPane(DatabaseManager dbManager) {
         this.dbManager = dbManager;
         
         // Load CSS file
+        initializeStyles();
+
+        // Create and setup components
+        TableView<LiveStock> stocksTable = createStocksTable();
+        ListView<String> watchlistsView = createWatchlistView(stocksTable);
+        VBox watchlistContainer = createWatchlistContainer(watchlistsView);        
+        
+        // Add components to SplitPane
+        this.getItems().addAll(watchlistContainer, stocksTable);
+        this.setDividerPositions(0.3);
+        this.setPrefWidth(Double.MAX_VALUE);
+
+        // Select first watchlist by default        
+        watchlistsView.getSelectionModel().selectFirst();
+    }
+
+    private void initializeStyles() {
         this.getStylesheets().add(getClass().getResource("/css/watchlist.css").toExternalForm());
         this.getStyleClass().add("split-pane");
+    }
 
-        // Initialize left pane with watchlists
+    private VBox createWatchlistContainer(ListView<String> watchlistsView) {
+        // Create header components
         Label watchlistsLabel = new Label("Watchlists");
         Button addWatchlistButton = new Button("+");
         addWatchlistButton.getStyleClass().add("add-watchlist-button");
         
+        HBox header = createWatchlistHeader(watchlistsLabel, addWatchlistButton);
+        
+        setupAddWatchlistButton(addWatchlistButton, watchlistsView);
+
+        VBox watchlistContainer = new VBox();
+        watchlistContainer.getStyleClass().add("watchlist-container");
+        watchlistContainer.getChildren().addAll(header, watchlistsView);
+        
+        return watchlistContainer;
+    }
+
+    private HBox createWatchlistHeader(Label watchlistsLabel, Button addWatchlistButton) {
         HBox header = new HBox();
         header.getStyleClass().add("watchlist-header");
         HBox.setHgrow(watchlistsLabel, Priority.ALWAYS);
         header.getChildren().addAll(watchlistsLabel, addWatchlistButton);
-        
-        watchlistsView = new ListView<>();
-        watchlistsView.getStyleClass().add("watchlist-view");
-        watchlistsView.setItems(FXCollections.observableArrayList(dbManager.getWatchlists()));
-        watchlistsView.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> loadWatchlistData(newValue)
-        );
-        VBox.setVgrow(watchlistsView, Priority.ALWAYS);
+        return header;
+    }
 
-        // Custom cell factory to add delete button
-        watchlistsView.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+    private ListView<String> createWatchlistView(TableView<LiveStock> stocksTable) {
+        ListView<String> listView = new ListView<>();
+        listView.getStyleClass().add("watchlist-view");
+        listView.setItems(FXCollections.observableArrayList(dbManager.getWatchlists()));
+        listView.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> loadWatchlistData(newValue, stocksTable)
+        );
+        VBox.setVgrow(listView, Priority.ALWAYS);
+        
+        setupWatchlistCellFactory(listView);
+        
+        return listView;
+    }
+
+    private void setupWatchlistCellFactory(ListView<String> listView) {
+        listView.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
             private final Button deleteButton = new Button("-");
             private final HBox cell = new HBox();
             private final Label label = new Label();
             
             {
+                setupCellComponents();
+            }
+
+            private void setupCellComponents() {
                 deleteButton.getStyleClass().add("delete-watchlist-button");
                 deleteButton.setVisible(false);
                 cell.getChildren().addAll(label, deleteButton);
                 cell.setSpacing(10);
                 cell.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
                 
-                // Set HBox to fill width
                 cell.setMaxWidth(Double.MAX_VALUE);
                 HBox.setHgrow(cell, Priority.ALWAYS);
                 
-                // Make label fill available space
                 label.setMaxWidth(Double.MAX_VALUE);
                 HBox.setHgrow(label, Priority.ALWAYS);
                 
-                // Right align delete button
                 deleteButton.setMaxWidth(USE_PREF_SIZE);
                 HBox.setMargin(deleteButton, new javafx.geometry.Insets(0, 5, 0, 0));
             }
@@ -82,10 +120,9 @@ public class WatchlistPane extends SplitPane {
                     label.setText(item);
                     deleteButton.setOnAction(event -> {
                         dbManager.deleteWatchlist(item);
-                        watchlistsView.getItems().remove(item);
+                        listView.getItems().remove(item);
                     });
                     
-                    // Show delete button on hover
                     setOnMouseEntered(event -> deleteButton.setVisible(true));
                     setOnMouseExited(event -> deleteButton.setVisible(false));
                     
@@ -93,7 +130,9 @@ public class WatchlistPane extends SplitPane {
                 }
             }
         });
+    }
 
+    private void setupAddWatchlistButton(Button addWatchlistButton, ListView<String> watchlistsView) {
         addWatchlistButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("New Watchlist");
@@ -110,41 +149,41 @@ public class WatchlistPane extends SplitPane {
                 }
             });
         });
+    }
 
-        VBox watchlistContainer = new VBox();
-        watchlistContainer.getStyleClass().add("watchlist-container");
-        watchlistContainer.getChildren().addAll(header, watchlistsView);
-
-        // Initialize right pane with stocks table
-        TableView<LiveStock> stocksTable = new TableView<>();
-        stocksTable.getStyleClass().add("stocks-table");
-        stocksData = FXCollections.observableArrayList();
+    private TableView<LiveStock> createStocksTable() {
+        TableView<LiveStock> table = new TableView<>();
+        table.getStyleClass().add("stocks-table");
+        ObservableList<LiveStock> stocksData = FXCollections.observableArrayList();
         
+        TableColumn<LiveStock, String> nameCol = createNameColumn();
+        TableColumn<LiveStock, Double> ltpCol = createLTPColumn();
+
+        table.getColumns().add(nameCol);
+        table.getColumns().add(ltpCol);
+        table.setItems(stocksData);
+        
+        return table;
+    }
+
+    private TableColumn<LiveStock, String> createNameColumn() {
         TableColumn<LiveStock, String> nameCol = new TableColumn<>("Stock Name");
         nameCol.setCellValueFactory(cellData -> 
             new javafx.beans.property.SimpleStringProperty(cellData.getValue().getInstrument_key()));
         nameCol.setPrefWidth(200);
+        return nameCol;
+    }
 
+    private TableColumn<LiveStock, Double> createLTPColumn() {
         TableColumn<LiveStock, Double> ltpCol = new TableColumn<>("LTP");
         ltpCol.setCellValueFactory(cellData -> 
             cellData.getValue().ltpProperty().asObject());
         ltpCol.setPrefWidth(100);
-
-        stocksTable.getColumns().add(nameCol);
-        stocksTable.getColumns().add(ltpCol);
-        stocksTable.setItems(stocksData);
-
-        
-        // Add watchlistContainer and stocksTable to SplitPane
-        this.getItems().addAll(watchlistContainer, stocksTable);
-        this.setDividerPositions(0.3);
-        this.setPrefWidth(Double.MAX_VALUE);
-
-        // Select first watchlist by default
-        watchlistsView.getSelectionModel().selectFirst();
+        return ltpCol;
     }
 
-    private void loadWatchlistData(String watchlistName) {
+    private void loadWatchlistData(String watchlistName, TableView<LiveStock> stocksTable) {
+        ObservableList<LiveStock> stocksData = stocksTable.getItems();
         stocksData.clear();        
         
         // Example data
