@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import database.DatabaseManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
-
+import ui.watchlist.WatchlistPane;
 public class HomePanel extends BorderPane {
     private WatchlistPane watchlistPane;
     private PortfolioPane portfolioPane;
