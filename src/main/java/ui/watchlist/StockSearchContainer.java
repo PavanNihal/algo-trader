@@ -57,6 +57,7 @@ public class StockSearchContainer extends VBox {
         TextField field = new TextField();
         field.setPromptText("Search stocks to add to watchlist...");
         field.getStyleClass().add("search-field");
+        VBox.setMargin(field, new Insets(0, 0, 10, 0));
         return field;
     }
 
