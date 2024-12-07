@@ -8,6 +8,7 @@ import authentication.AccessTokenExpiredException;
 
 import model.Stock;
 import util.Scrapper;
+import model.Watchlist;
 
 public class DatabaseManager {
     private static final String DB_FILE = "trading_app";  // Will create trading_app.mv.db
@@ -65,6 +66,14 @@ public class DatabaseManager {
                     "name VARCHAR(255) UNIQUE" +
                     ")"
                 );
+                stmt.execute(
+                    "CREATE TABLE IF NOT EXISTS watchlist_instruments (" +
+                    "instrument_key VARCHAR(100), " +
+                    "watchlist_id INT, " +
+                    "FOREIGN KEY (watchlist_id) REFERENCES watchlists(id)" +
+                    ")"
+                );
+
             }                
         } catch (SQLException e) {
             e.printStackTrace();
@@ -242,13 +251,14 @@ public class DatabaseManager {
         }
     }
 
-    public List<String> getWatchlists() {
-        List<String> watchlists = new ArrayList<>();
+    public List<Watchlist> getWatchlists() {
+        List<Watchlist> watchlists = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
-            Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT name FROM watchlists");
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id, name FROM watchlists")) {
+            
             while (rs.next()) {
-                watchlists.add(rs.getString("name"));
+                watchlists.add(new Watchlist(rs.getInt("id"), rs.getString("name")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -256,13 +266,38 @@ public class DatabaseManager {
         return watchlists;
     }
 
-    public void deleteWatchlist(String name) {
+    public void deleteWatchlist(Watchlist watchlist) {
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
-             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM watchlists WHERE name = ?")) {
-            pstmt.setString(1, name);
+             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM watchlists WHERE id = ?")) {
+            pstmt.setInt(1, watchlist.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void saveWatchlistInstrument(String instrumentKey, int watchlistId) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO watchlist_instruments (instrument_key, watchlist_id) VALUES (?, ?)")) {
+            pstmt.setString(1, instrumentKey);
+            pstmt.setInt(2, watchlistId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> getWatchlistInstruments(int watchlistId) {
+        List<String> instruments = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT instrument_key FROM watchlist_instruments WHERE watchlist_id = " + watchlistId)) {
+            while (rs.next()) {
+                instruments.add(rs.getString("instrument_key"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return instruments;
     }
 } 

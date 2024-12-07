@@ -94,3 +94,43 @@
 .delete-watchlist-button {
     -fx-background-color: red;
 }
+
+/* Search Components */
+.search-field {
+    -fx-background-color: white;
+    -fx-pref-width: 200;
+}
+
+.search-field:focused {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.search-results {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-pref-height: 200;
+}
+
+.search-results:focused {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.search-cell {
+    -fx-padding: 5px;
+    -fx-background-color: white;
+}
+
+.search-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+/* Table Placeholder */
+.table-placeholder {
+    -fx-text-fill: #666666;
+    -fx-font-size: 14px;
+}
