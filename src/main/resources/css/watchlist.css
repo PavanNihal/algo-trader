@@ -89,3 +89,8 @@
     -fx-background-color: #e0e0e0;
     -fx-padding: 0 1 0 1;
 } 
+
+/* Delete Watchlist Button */
+.delete-watchlist-button {
+    -fx-background-color: red;
+}

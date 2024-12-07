@@ -47,6 +47,53 @@ public class WatchlistPane extends SplitPane {
         );
         VBox.setVgrow(watchlistsView, Priority.ALWAYS);
 
+        // Custom cell factory to add delete button
+        watchlistsView.setCellFactory(lv -> new javafx.scene.control.ListCell<String>() {
+            private final Button deleteButton = new Button("-");
+            private final HBox cell = new HBox();
+            private final Label label = new Label();
+            
+            {
+                deleteButton.getStyleClass().add("delete-watchlist-button");
+                deleteButton.setVisible(false);
+                cell.getChildren().addAll(label, deleteButton);
+                cell.setSpacing(10);
+                cell.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                
+                // Set HBox to fill width
+                cell.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(cell, Priority.ALWAYS);
+                
+                // Make label fill available space
+                label.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(label, Priority.ALWAYS);
+                
+                // Right align delete button
+                deleteButton.setMaxWidth(USE_PREF_SIZE);
+                HBox.setMargin(deleteButton, new javafx.geometry.Insets(0, 5, 0, 0));
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    label.setText(item);
+                    deleteButton.setOnAction(event -> {
+                        dbManager.deleteWatchlist(item);
+                        watchlistsView.getItems().remove(item);
+                    });
+                    
+                    // Show delete button on hover
+                    setOnMouseEntered(event -> deleteButton.setVisible(true));
+                    setOnMouseExited(event -> deleteButton.setVisible(false));
+                    
+                    setGraphic(cell);
+                }
+            }
+        });
+
         addWatchlistButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("New Watchlist");

@@ -255,4 +255,14 @@ public class DatabaseManager {
         }
         return watchlists;
     }
+
+    public void deleteWatchlist(String name) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM watchlists WHERE name = ?")) {
+            pstmt.setString(1, name);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 } 
