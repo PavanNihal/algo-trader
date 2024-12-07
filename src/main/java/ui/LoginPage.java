@@ -15,38 +15,37 @@ public class LoginPage extends VBox {
     private static final String LOGIN_MESSAGE = """
     Login with your preferred broker. 
     You will be redirected to the broker's login page.
-    Once the authentication is succesfull, return this application to continue.
+    Once the authentication is succesful, return to this application to continue.
     """;
     private Consumer<Status> authenticationListener;
 
-    
-
     public LoginPage() {
         super(20); // spacing between elements
-        setAlignment(Pos.CENTER);
-        setPrefWidth(400);
-        setPrefHeight(300);
+        getStyleClass().add("login-container");
+        
+        // Load CSS file
+        getStylesheets().add(getClass().getResource("/css/login.css").toExternalForm());
 
         // Welcome message
         Label welcomeLabel = new Label(LOGIN_MESSAGE);
-        welcomeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;");
+        welcomeLabel.getStyleClass().add("welcome-label");
         welcomeLabel.setAlignment(Pos.CENTER);
 
         // Login button
         Button loginButton = new Button("Login to Upstox");
-        loginButton.setPrefWidth(200);
+        loginButton.getStyleClass().add("login-button");
 
         // Status labels
         Label successLabel = new Label("Login Successful!");
-        successLabel.setStyle("-fx-text-fill: green;");
+        successLabel.getStyleClass().add("success-label");
         successLabel.setVisible(false);
 
         Label failureLabel = new Label("Authentication failed. Please try logging in again.");
-        failureLabel.setStyle("-fx-text-fill: red;");
+        failureLabel.getStyleClass().add("failure-label");
         failureLabel.setVisible(false);
 
         Label fetchingLabel = new Label("Fetching Stocks...");
-        fetchingLabel.setStyle("-fx-text-fill: blue;");
+        fetchingLabel.getStyleClass().add("fetching-label");
         fetchingLabel.setVisible(false);
 
         // Add elements to the VBox
