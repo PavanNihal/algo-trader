@@ -26,7 +26,9 @@ public class MainFrame extends StackPane {
         });
 
         // Create the scene
-        new Scene(this, 1000, 800);
+        Scene scene = new Scene(this, 1000, 800);
+        String cssPath = getClass().getResource("/css/main.css").toExternalForm();
+        scene.getStylesheets().add(cssPath);
     }
 
     public void showLoginPage() {

@@ -1,0 +1,91 @@
+/* Watchlist Styles */
+
+/* Watchlist Container */
+.watchlist-container {
+    -fx-padding: 10;
+    -fx-spacing: 10;
+}
+
+/* Header Styles */
+.watchlist-header {
+    -fx-spacing: 10;
+    -fx-padding: 5;
+    -fx-alignment: center;
+}
+
+.watchlist-header .label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+/* Add Watchlist Button */
+.add-watchlist-button {
+    -fx-min-width: 25;
+    -fx-min-height: 25;
+    -fx-background-radius: 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+/* Watchlist ListView */
+.watchlist-view {
+    -fx-pref-width: 200;
+    -fx-background-color: white;
+}
+
+.watchlist-view .list-cell {
+    -fx-text-fill: black;
+}
+
+.watchlist-view .list-cell:selected {
+    -fx-background-color: #0096c9;
+    -fx-text-fill: white;
+}
+
+.watchlist-view .list-cell:hover {
+    -fx-background-color: #808080;
+    -fx-text-fill: white;
+}
+
+/* Stocks Table */
+.stocks-table {
+    -fx-background-color: white;
+}
+
+.stocks-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.stocks-table .column-header {
+    -fx-background-color: #f5f5f5;
+    -fx-padding: 8;
+    -fx-text-fill: black;
+}
+
+.stocks-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.stocks-table .table-row-cell:odd {
+    -fx-background-color: #f9f9f9;
+}
+
+.stocks-table .table-row-cell:selected {
+    -fx-background-color: #0096c9;
+    -fx-text-fill: white;
+}
+
+/* Split Pane */
+.split-pane {
+    -fx-background-color: transparent;
+    -fx-box-border: transparent;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: #e0e0e0;
+    -fx-padding: 0 1 0 1;
+} 
