@@ -1,6 +1,7 @@
 package ui;
 
 import authentication.Authenticator.Status;
+import database.DatabaseManager;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 
@@ -9,9 +10,9 @@ public class MainFrame extends StackPane {
     private LoginPage loginPage;
     private HomePanel homePanel;
 
-    public MainFrame() {
+    public MainFrame(DatabaseManager dbManager) {
         loginPage = new LoginPage();
-        homePanel = new HomePanel();
+        homePanel = new HomePanel(dbManager);
 
         // Add both pages to the StackPane
         getChildren().addAll(loginPage, homePanel);

@@ -59,6 +59,12 @@ public class DatabaseManager {
                     "security_type VARCHAR(50)" +
                     ")"
                 );
+                stmt.execute(
+                    "CREATE TABLE IF NOT EXISTS watchlists (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "name VARCHAR(255) UNIQUE" +
+                    ")"
+                );
             }                
         } catch (SQLException e) {
             e.printStackTrace();
@@ -224,5 +230,29 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return stocks;
+    }
+
+    public void saveWatchlist(String name) {
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO watchlists (name) VALUES (?)")) {
+            pstmt.setString(1, name);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> getWatchlists() {
+        List<String> watchlists = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+            Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT name FROM watchlists");
+            while (rs.next()) {
+                watchlists.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return watchlists;
     }
 } 

@@ -2,6 +2,7 @@ package ui;
 
 import java.util.Optional;
 
+import database.DatabaseManager;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,8 +20,11 @@ import model.LiveStock;
 public class WatchlistPane extends SplitPane {
     private ListView<String> watchlistsView;
     private ObservableList<LiveStock> stocksData;
+    private DatabaseManager dbManager;
 
-    public WatchlistPane() {
+    public WatchlistPane(DatabaseManager dbManager) {
+        this.dbManager = dbManager;
+        
         // Load CSS file
         this.getStylesheets().add(getClass().getResource("/css/watchlist.css").toExternalForm());
         this.getStyleClass().add("split-pane");
@@ -37,7 +41,7 @@ public class WatchlistPane extends SplitPane {
         
         watchlistsView = new ListView<>();
         watchlistsView.getStyleClass().add("watchlist-view");
-        watchlistsView.getItems().addAll("Default Watchlist", "My Watchlist 1", "My Watchlist 2");
+        watchlistsView.setItems(FXCollections.observableArrayList(dbManager.getWatchlists()));
         watchlistsView.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> loadWatchlistData(newValue)
         );
@@ -53,6 +57,7 @@ public class WatchlistPane extends SplitPane {
             result.ifPresent(name -> {
                 String trimmedName = name.trim();
                 if (!trimmedName.isEmpty() && !watchlistsView.getItems().contains(trimmedName)) {
+                    dbManager.saveWatchlist(trimmedName);  // Save to DB
                     watchlistsView.getItems().add(trimmedName);
                     watchlistsView.getSelectionModel().select(trimmedName);
                 }

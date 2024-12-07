@@ -5,6 +5,8 @@ import ui.MainFrame;
 
 import java.sql.SQLException;
 
+import database.DatabaseManager;
+
 public class UITest extends Application {
 
     @Override
@@ -12,9 +14,12 @@ public class UITest extends Application {
         try {
             // Start H2 web server
             org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
+
+            DatabaseManager dbManager = DatabaseManager.getInstance();
+            dbManager.initDatabase();
             
             // Initialize UI
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame(dbManager);
             primaryStage.setTitle("Algo Trader");
             primaryStage.setScene(mainFrame.getScene());
             primaryStage.show();

@@ -3,6 +3,7 @@ package ui;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import database.DatabaseManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
 
@@ -12,7 +13,7 @@ public class HomePanel extends BorderPane {
     private StrategyBuilderPane strategyBuilderPane;
     private SplitPane splitPane;
 
-    public HomePanel() {
+    public HomePanel(DatabaseManager dbManager) {
         // Create the left side panel with options
         VBox leftPanel = new VBox(10); // 10 pixels spacing
         leftPanel.setPadding(new Insets(10));
@@ -32,7 +33,7 @@ public class HomePanel extends BorderPane {
         leftPanel.getChildren().addAll(watchlistBtn, portfolioBtn, strategyBtn);
 
         // Initialize the content panes
-        watchlistPane = new WatchlistPane();
+        watchlistPane = new WatchlistPane(dbManager);
         portfolioPane = new PortfolioPane();
         strategyBuilderPane = new StrategyBuilderPane();
 
