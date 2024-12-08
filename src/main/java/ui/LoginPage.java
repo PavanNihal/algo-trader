@@ -81,7 +81,6 @@ public class LoginPage extends VBox {
                 }
             });
 
-            dbManager.initDatabase();
             authenticator.authenticate();
         });
     }
