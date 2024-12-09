@@ -103,7 +103,7 @@ public class StockSearchContainer extends VBox {
                 showSearchResults();
                 
                 if (searchField.isFocused()) {
-                    searchResultsView.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);");
+                    searchResultsView.getStyleClass().add("search-results-active");
                 }
             }
         });
