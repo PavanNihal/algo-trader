@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import model.LiveStock;
 import model.Stock;
 import database.DatabaseManager;
@@ -30,7 +31,8 @@ public class StockSearchContainer extends VBox {
         this.setPadding(new Insets(10));
 
         // Create search components
-        searchField = createSearchField();
+        this.searchField = createSearchField();
+        HBox searchBox = createSearchBox(this.searchField);
         searchResultsView = createSearchResultsView();
         
         // Load all stocks
@@ -40,25 +42,53 @@ public class StockSearchContainer extends VBox {
                 .collect(Collectors.toList())
         );
 
-        // Create stack pane for search results overlay
-        StackPane stackPane = createStackPane();
+        // Create separate containers for search results and stock table
+        VBox searchContainer = new VBox();
+        searchContainer.getChildren().addAll(searchBox, searchResultsView);
+        
+        VBox tableContainer = new VBox();
+        tableContainer.getChildren().add(stocksTable);
+        VBox.setMargin(stocksTable, new Insets(30, 0, 0, 0));
+        
+        // Create stack pane to overlay search results
+        StackPane overlayPane = new StackPane();
+        overlayPane.getChildren().addAll(tableContainer, searchContainer);
+        
+        // Setup alignment for search container
+        StackPane.setAlignment(searchContainer, Pos.TOP_CENTER);
         
         // Setup event handlers
         setupSearchFieldListener();
         setupKeyboardNavigation();
         setupMouseSelection();
         
-        // Add components
-        this.getChildren().addAll(searchField, stackPane);
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
+        // Add the overlay pane to main container
+        this.getChildren().add(overlayPane);
+        VBox.setVgrow(overlayPane, Priority.ALWAYS);
     }
 
     private TextField createSearchField() {
         TextField field = new TextField();
         field.setPromptText("Search stocks to add to watchlist...");
-        field.getStyleClass().add("search-field");
-        VBox.setMargin(field, new Insets(0, 0, 10, 0));
+        field.getStyleClass().add("search-field");        
+
         return field;
+    }
+
+    private HBox createSearchBox(TextField field) {
+        javafx.scene.control.Button clearButton = new javafx.scene.control.Button("✕");
+        clearButton.getStyleClass().add("clear-button");
+        clearButton.setOnAction(e -> clearSearch());
+        clearButton.setVisible(false);
+        
+        field.textProperty().addListener((observable, oldValue, newValue) -> {
+            clearButton.setVisible(newValue != null && !newValue.isEmpty());
+        });
+        
+        HBox searchBox = new HBox(field, clearButton);
+        searchBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(field, Priority.ALWAYS);
+        return searchBox;
     }
 
     private ListView<String> createSearchResultsView() {
@@ -82,13 +112,6 @@ public class StockSearchContainer extends VBox {
         return listView;
     }
 
-    private StackPane createStackPane() {
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(stocksTable, searchResultsView);
-        StackPane.setAlignment(searchResultsView, Pos.TOP_CENTER);
-        StackPane.setMargin(searchResultsView, new Insets(0, 10, 0, 10));
-        return stackPane;
-    }
 
     private void setupSearchFieldListener() {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -119,18 +142,21 @@ public class StockSearchContainer extends VBox {
 
     private void setupKeyboardNavigation() {
         searchField.setOnKeyPressed(event -> {
-            if (!searchResultsView.isVisible()) return;
+            
 
             switch (event.getCode()) {
                 case UP:
+                    if (!searchResultsView.isVisible()) return;
                     navigateResults(-1);
                     event.consume();
                     break;
                 case DOWN:
+                    if (!searchResultsView.isVisible()) return;
                     navigateResults(1);
                     event.consume();
                     break;
                 case ENTER:
+                    if (!searchResultsView.isVisible()) return;
                     addSelectedStock();
                     event.consume();
                     break;

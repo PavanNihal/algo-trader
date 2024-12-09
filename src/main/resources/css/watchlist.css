@@ -99,6 +99,7 @@
 .search-field {
     -fx-background-color: white;
     -fx-pref-width: 200;
+    -fx-max-width: Infinity;
 }
 
 .search-field:focused {
@@ -117,11 +118,16 @@
     -fx-background-color: white;
     -fx-border-color: #cccccc;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(182, 120, 120, 0.2), 10, 0, 0, 2);
+    /* Custom shadow effect for 3 sides (left, right, bottom) */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5),  /* bottom shadow */
+                dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, -5, 0),  /* left shadow */
+                dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 5, 0);   /* right shadow */
 }
 
 .search-results-focused {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5),
+                dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, -5, 0),
+                dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 5, 0);
 }
 
 .search-cell {
@@ -143,4 +149,25 @@
 .table-placeholder {
     -fx-text-fill: #666666;
     -fx-font-size: 14px;
+}
+
+/* Clear button in search field */
+.clear-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 5 0 5;
+    -fx-font-size: 14px;
+    -fx-text-fill: #999999;
+}
+
+.clear-button:hover {
+    -fx-text-fill: #333333;
+    -fx-cursor: hand;
+}
+
+.clear-button:pressed {
+    -fx-text-fill: #666666;
+}
+
+.clearable-field {
+    -fx-padding: 5 25 5 5;
 }
