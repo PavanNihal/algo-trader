@@ -1,4 +1,4 @@
-package api;
+package api.upstox;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -22,26 +22,17 @@ import com.upstox.auth.OAuth;
 import com.upstox.marketdatafeeder.rpc.proto.MarketDataFeed;
 
 import api.exceptions.FeederNotStartedException;
-import database.DatabaseManager;
 import io.swagger.client.api.WebsocketApi;
 
-public class UpstoxLiveFeeder implements LiveFeeder {
-
-    private String authToken;
+public class UpstoxLiveFeeder {
+    private List<String> instrumentKeys;
+    private List<String> pendingInstrumentKeys;
+    private boolean isConnected;
     private WebSocketClient client;
-    private boolean feederStarted = false;
-    private List<String> instrumentCache = new ArrayList<>();
 
-    @Override
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
-    @Override
-    public void start() throws FeederNotStartedException {
+    public UpstoxLiveFeeder(String accessToken) {
         try {
-            // Get an authenticated API client
-            ApiClient authenticatedClient = authenticateApiClient(authToken);
+            ApiClient authenticatedClient = authenticateApiClient(accessToken);
 
             // Get authorized WebSocket URI for market data feed
             URI serverUri = getAuthorizedWebSocketUri(authenticatedClient);
@@ -49,46 +40,47 @@ public class UpstoxLiveFeeder implements LiveFeeder {
             // Create and connect the WebSocket client
             this.client = createWebSocketClient(serverUri);
             this.client.connect();
-        }   
-        catch (Exception e) {
+        }
+        catch(Exception e) {
             throw new FeederNotStartedException("Failed to start feeder");
         }
     }
 
-    @Override
-    public void stop() {
-        this.client.close();
-    }
-
-    @Override
-    public void subscribe(List<String> instrumentKeys) {
-        if (feederStarted) {
-            sendSubscriptionRequest(instrumentKeys);
-        } else {
-            instrumentCache.addAll(instrumentKeys);
+    public void subscribe(String instrumentKey) {
+        if(isConnected) {
+            sendSubscriptionRequest(Arrays.asList(instrumentKey));
+            this.instrumentKeys.add(instrumentKey);
+        }
+        else {
+            this.pendingInstrumentKeys.add(instrumentKey);
         }
     }
 
-    @Override
-    public void unsubscribe(List<String> instrumentKeys) {
-        JsonObject requestObject = constructUnsubscriptionRequest(instrumentKeys);
-        byte[] binaryData = requestObject.toString()
-                .getBytes(StandardCharsets.UTF_8);
-
-        System.out.println("Sending: " + requestObject);
-        this.client.send(binaryData);
+    public void unsubscribe(String instrumentKey) {
+        sendUnsubscriptionRequest(Arrays.asList(instrumentKey));
+        this.instrumentKeys.remove(instrumentKey);
+        this.pendingInstrumentKeys.remove(instrumentKey);        
     }
 
-    public static void main(String[] args) throws Exception {
-
-        // Define your access token
-        String accessToken = DatabaseManager.getInstance().getToken();
-        UpstoxLiveFeeder feeder = new UpstoxLiveFeeder();
-        feeder.setAuthToken(accessToken);
-        feeder.start();
-        feeder.subscribe(Arrays.asList("NSE_INDEX|Nifty Bank", "NSE_INDEX|Nifty 50"));
+    public void subscribe(List<String> instrumentKeys) {
+        sendSubscriptionRequest(instrumentKeys);
+        this.instrumentKeys.addAll(instrumentKeys);
     }
 
+    public List<String> getInstrumentKeys() {
+        if(this.pendingInstrumentKeys.isEmpty()) {
+            return this.instrumentKeys;
+        }
+        else {
+            List<String> instrumentKeys = new ArrayList<>(this.instrumentKeys);
+            instrumentKeys.addAll(this.pendingInstrumentKeys);
+            return instrumentKeys;
+        }        
+    }
+
+    public int getInstrumentCount() {
+        return this.instrumentKeys.size() + this.pendingInstrumentKeys.size();
+    }
 
     private static ApiClient authenticateApiClient(String accessToken) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
@@ -112,10 +104,10 @@ public class UpstoxLiveFeeder implements LiveFeeder {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 System.out.println("Opened connection");                
-                feederStarted = true;
-                if(!instrumentCache.isEmpty()) {
-                    sendSubscriptionRequest(instrumentCache);
-                    instrumentCache.clear();
+                isConnected = true;
+                if(!pendingInstrumentKeys.isEmpty()) {
+                    sendSubscriptionRequest(pendingInstrumentKeys);
+                    pendingInstrumentKeys.clear();
                 }
             }
 
@@ -132,7 +124,7 @@ public class UpstoxLiveFeeder implements LiveFeeder {
             @Override
             public void onClose(int code, String reason, boolean remote) {
                 System.out.println("Connection closed by " + (remote ? "remote peer" : "us") + ". Info: " + reason);
-                feederStarted = false;
+                isConnected = false;
             }
 
             @Override
@@ -150,7 +142,15 @@ public class UpstoxLiveFeeder implements LiveFeeder {
         System.out.println("Sending: " + requestObject);
         this.client.send(binaryData);
     }
-    
+
+    private void sendUnsubscriptionRequest(List<String> instrumentKeys) {
+        JsonObject requestObject = constructUnsubscriptionRequest(instrumentKeys);
+        byte[] binaryData = requestObject.toString()
+                .getBytes(StandardCharsets.UTF_8);
+
+        System.out.println("Sending: " + requestObject);
+        this.client.send(binaryData);
+    }
 
     private static JsonObject constructSubscriptionRequest(List<String> instrumentKeys) {
         JsonObject dataObject = new JsonObject();
@@ -183,6 +183,7 @@ public class UpstoxLiveFeeder implements LiveFeeder {
 
         return mainObject;
     }
+
     private static <FeedResponse> void handleBinaryMessage(ByteBuffer bytes) {
         System.out.println("Received: " + bytes);
 
@@ -201,3 +202,4 @@ public class UpstoxLiveFeeder implements LiveFeeder {
         }
     }
 }
+
