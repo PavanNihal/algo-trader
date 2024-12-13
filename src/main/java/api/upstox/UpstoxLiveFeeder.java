@@ -154,7 +154,9 @@ public class UpstoxLiveFeeder {
 
     private static JsonObject constructSubscriptionRequest(List<String> instrumentKeys) {
         JsonObject dataObject = new JsonObject();
-        dataObject.addProperty("mode", "full");
+
+        /* Hardcoding to ltpc for now. Can also be set to option_chain or full*/
+        dataObject.addProperty("mode", "ltpc");
 
         JsonArray instrumentKeysjson = new Gson().toJsonTree(instrumentKeys)
                 .getAsJsonArray();
