@@ -29,3 +29,9 @@ keystore_password.txt
 
 # Local git config
 .git/config
+
+# Protobuf generated files
+com/upstox/marketdatafeeder/rpc/proto/MarketDataFeed.java
+
+# Generated JAR files
+libs/marketdatafeed.jar

@@ -7,6 +7,11 @@ public interface Authenticator {
         FAILURE
     }
 
+    public enum BROKER {
+        UPSTOX,
+        ZERODHA
+    }
+
     interface AuthListener {
         void onComplete(Status status);
     }

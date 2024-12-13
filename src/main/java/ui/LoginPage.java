@@ -65,6 +65,8 @@ public class LoginPage extends VBox {
 
                     dbManager.loadStocks();
                     dbManager.loadNiftyList();
+
+                    Configuration.getInstance().setBroker(Authenticator.BROKER.UPSTOX);
                     
                     // Notify the authentication listener
                     if (authenticationListener != null) {
