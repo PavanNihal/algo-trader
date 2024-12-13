@@ -51,4 +51,4 @@ Note: Both `keystore.jks` and `keystore_password.txt` contain sensitive informat
    cd .. && rm -rf temp_compile
    ```
 
-Note: The generated `marketdatafeed.jar` should not be committed to the repository. It should be generated during project setup. The `.proto` file is the source of truth and is version controlled instead. Make sure `libs/marketdatafeed.jar` is added to your `.gitignore` file.
+Note: The generated `marketdatafeed.jar` should not be committed to the repository. It should be generated during project setup. The `.proto` file is the source of truth and is version controlled instead.
