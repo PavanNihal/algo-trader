@@ -14,6 +14,7 @@ buildNumber.properties
 # Eclipse Core
 .project
 .vscode
+.DS_Store
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
