@@ -12,7 +12,7 @@ public class LiveStock {
 
     private LiveStock(String instrument_key) {
         this.instrument_key = instrument_key;
-        this.ltp = new SimpleDoubleProperty(100 + Math.random() * 1900);
+        this.ltp = new SimpleDoubleProperty(0);
     }
 
     public String getInstrument_key() {

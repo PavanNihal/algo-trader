@@ -20,9 +20,11 @@ import com.upstox.Configuration;
 import com.upstox.api.WebsocketAuthRedirectResponse;
 import com.upstox.auth.OAuth;
 import com.upstox.marketdatafeeder.rpc.proto.MarketDataFeed;
+import com.upstox.marketdatafeeder.rpc.proto.MarketDataFeed.Feed;
 
 import api.exceptions.FeederNotStartedException;
 import io.swagger.client.api.WebsocketApi;
+import model.LiveStock;
 
 public class UpstoxLiveFeeder {
     private List<String> instrumentKeys;
@@ -192,11 +194,11 @@ public class UpstoxLiveFeeder {
         try {
             MarketDataFeed.FeedResponse feedResponse = MarketDataFeed.FeedResponse.parseFrom(bytes.array());
 
-            // Convert the protobuf object to a JSON string
-            String jsonFormat = feedResponse.toString();
-
-            // Print the JSON string
-            System.out.println(jsonFormat);
+            feedResponse.getFeedsMap().forEach((instrumentKey, feed) -> {
+                if(feed.hasLtpc()) {
+                    LiveStock.getInstance(instrumentKey).setLtp(feed.getLtpc().getLtp());
+                }
+            });
 
         } catch (InvalidProtocolBufferException e) {
             System.out.println("Received unparseable message");
