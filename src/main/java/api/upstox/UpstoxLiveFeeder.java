@@ -54,6 +54,11 @@ public class UpstoxLiveFeeder {
         this.instrumentKeys.remove(instrumentKey);       
     }
 
+    public void unsubscribe(List<String> instrumentKeys) {
+        sendUnsubscriptionRequest(instrumentKeys);
+        this.instrumentKeys.removeAll(instrumentKeys);
+    }
+
     public void subscribe(List<String> instrumentKeys) {
         sendSubscriptionRequest(instrumentKeys);
         this.instrumentKeys.addAll(instrumentKeys);

@@ -30,47 +30,58 @@ public class UpstoxFeedManager implements LiveFeedManager {
 
     @Override
     public void subscribe(List<String> instrumentKeys) {
-        int instrumentIndex = 0;
-        int feederIndex = 0;
-        for(; instrumentIndex < instrumentKeys.size(); ) {
-            String instrumentKey = instrumentKeys.get(instrumentIndex);
-            /* Instrument already subscribed to */
-            if(instrumentToFeederMap.containsKey(instrumentKey)) {
-                continue;
-            }
-
-            if(feederIndex >= liveFeeders.size()) {
-                int remainingInstruments = instrumentKeys.size() - instrumentIndex;
-                int requiredFeeders = (int) Math.ceil((double)remainingInstruments / MAX_INSTRUMENTS_PER_CONNECTION);
-                for(int i = 0; i < requiredFeeders; i++) {
-                    new UpstoxLiveFeeder(accessToken, this);
+        synchronized (lock) {
+            int instrumentIndex = 0;
+            int feederIndex = 0;
+            for(; instrumentIndex < instrumentKeys.size(); ) {
+                String instrumentKey = instrumentKeys.get(instrumentIndex);
+                /* Instrument already subscribed to */
+                if(instrumentToFeederMap.containsKey(instrumentKey)) {
+                    continue;
                 }
 
-                pendingInstruments.addAll(instrumentKeys.subList(instrumentIndex, instrumentKeys.size()));
-                return;
-            }
+                if(feederIndex >= liveFeeders.size()) {
+                    int remainingInstruments = instrumentKeys.size() - instrumentIndex;
+                    int requiredFeeders = (int) Math.ceil((double)remainingInstruments / MAX_INSTRUMENTS_PER_CONNECTION);
+                    for(int i = 0; i < requiredFeeders; i++) {
+                        new UpstoxLiveFeeder(accessToken, this);
+                    }
 
-            UpstoxLiveFeeder feeder = liveFeeders.get(feederIndex);
-            if(feeder.getInstrumentCount() < MAX_INSTRUMENTS_PER_CONNECTION) {
-                feeder.subscribe(instrumentKey);
-                instrumentToFeederMap.put(instrumentKey, feeder);
-                instrumentIndex++;
-            }
-            else {
-                feederIndex++;
+                    pendingInstruments.addAll(instrumentKeys.subList(instrumentIndex, instrumentKeys.size()));
+                    return;
+                }
+
+                UpstoxLiveFeeder feeder = liveFeeders.get(feederIndex);
+                if(feeder.getInstrumentCount() < MAX_INSTRUMENTS_PER_CONNECTION) {
+                    feeder.subscribe(instrumentKey);
+                    instrumentToFeederMap.put(instrumentKey, feeder);
+                    instrumentIndex++;
+                }
+                else {
+                    feederIndex++;
+                }
             }
         }
     }
 
     @Override
     public void unsubscribe(List<String> instrumentKeys) {
-        for(String instrumentKey : instrumentKeys) {
-            UpstoxLiveFeeder feeder = instrumentToFeederMap.get(instrumentKey);
-            if(feeder == null) {
-                continue;
+        synchronized (lock) {
+            Map<UpstoxLiveFeeder, List<String>> feederToInstrumentsMap = new HashMap<>();
+            
+            for(String instrumentKey : instrumentKeys) {
+                UpstoxLiveFeeder feeder = instrumentToFeederMap.get(instrumentKey);
+                if(feeder == null) {
+                    continue;
+                }
+                
+                feederToInstrumentsMap.computeIfAbsent(feeder, k -> new ArrayList<>()).add(instrumentKey);
+                instrumentToFeederMap.remove(instrumentKey);
             }
-            feeder.unsubscribe(instrumentKey);
-            instrumentToFeederMap.remove(instrumentKey);
+            
+            for(Map.Entry<UpstoxLiveFeeder, List<String>> entry : feederToInstrumentsMap.entrySet()) {
+                entry.getKey().unsubscribe(entry.getValue());
+            }
         }
     }
 
