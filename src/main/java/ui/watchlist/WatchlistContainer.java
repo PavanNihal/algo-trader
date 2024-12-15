@@ -31,9 +31,8 @@ public class WatchlistContainer extends VBox {
         // Create header
         HBox header = createHeader(watchlistsLabel, addWatchlistButton);
         
-        // Create watchlist view
-        List<Watchlist> watchlists = dbManager.getWatchlists();
-        watchlistsView = createWatchlistView(watchlists);
+        // Initialize watchlistsView without data
+        watchlistsView = createWatchlistView(FXCollections.observableArrayList());
         
         // Setup add button functionality
         setupAddWatchlistButton(addWatchlistButton);
@@ -144,5 +143,11 @@ public class WatchlistContainer extends VBox {
 
     public void selectFirstWatchlist() {
         watchlistsView.getSelectionModel().selectFirst();
+    }
+
+    // Added a method to load watchlists
+    public void loadWatchlists() {
+        List<Watchlist> watchlists = dbManager.getWatchlists();
+        watchlistsView.setItems(FXCollections.observableArrayList(watchlists));
     }
 } 

@@ -3,6 +3,8 @@ package ui;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import api.LiveFeedManager;
+import api.LiveFeederFactory;
 import database.DatabaseManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
@@ -54,5 +56,10 @@ public class HomePanel extends BorderPane {
         });
 
         setCenter(splitPane);
+    }
+
+    public void initializeAfterLogin() {
+        LiveFeedManager liveFeedManager = LiveFeederFactory.getInstance();
+        watchlistPane.init(liveFeedManager);
     }
 }

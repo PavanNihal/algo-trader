@@ -7,12 +7,19 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import model.LiveStock;
 import java.util.List;
+import java.util.ArrayList;
+
+import api.LiveFeedManager;
 
 public class StockTable extends TableView<LiveStock> {
+    private LiveFeedManager liveFeedManager;
+    private List<String> currentInstruments;
+    
     public StockTable() {
         this.getStyleClass().add("stocks-table");
         setupColumns();
         setupPlaceholder();
+        this.currentInstruments = new ArrayList<>();
     }
 
     private void setupColumns() {
@@ -45,11 +52,22 @@ public class StockTable extends TableView<LiveStock> {
     }
 
     public void loadStocks(List<String> instrumentKeys) {
+        if (!currentInstruments.isEmpty()) {
+            liveFeedManager.unsubscribe(currentInstruments);
+        }
+
+        this.currentInstruments = new ArrayList<>(instrumentKeys);
+        this.liveFeedManager.subscribe(instrumentKeys);
+
         ObservableList<LiveStock> stocksData = FXCollections.observableArrayList();
         for (String instrumentKey : instrumentKeys) {
             LiveStock stock = LiveStock.getInstance(instrumentKey);
             stocksData.add(stock);
         }
         this.setItems(stocksData);
+    }
+
+    public void setLiveFeedManager(LiveFeedManager liveFeedManager) {
+        this.liveFeedManager = liveFeedManager;
     }
 } 

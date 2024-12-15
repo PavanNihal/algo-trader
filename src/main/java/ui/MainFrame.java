@@ -22,6 +22,7 @@ public class MainFrame extends StackPane {
         // Register authentication listener
         loginPage.setAuthenticationListener(status -> {
             if (status == Status.SUCCESS) {
+                homePanel.initializeAfterLogin();
                 showHomePage();
             }
         });
