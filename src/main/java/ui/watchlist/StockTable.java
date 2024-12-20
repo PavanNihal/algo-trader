@@ -5,9 +5,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import model.LiveStock;
 import model.Stock;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -17,46 +20,46 @@ import api.LiveFeedManager;
 public class StockTable extends TableView<LiveStockWrapper> {
     private LiveFeedManager liveFeedManager;
     private List<String> currentInstruments;
+
+    @FXML
+    private TableColumn<LiveStockWrapper, String> nameColumn;
+
+    @FXML
+    private TableColumn<LiveStockWrapper, String> symbolColumn;
+
+    @FXML
+    private TableColumn<LiveStockWrapper, Double> ltpColumn;
     
     public StockTable() {
-        this.getStyleClass().add("stocks-table");
-        setupColumns();
-        setupPlaceholder();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/StockTable.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
         this.currentInstruments = new ArrayList<>();
+        setupPlaceholder();
+        setupColumnValueFactories();
     }
 
-    private void setupColumns() {
-        @SuppressWarnings("unchecked")
-        TableColumn<LiveStockWrapper, ?>[] columns = new TableColumn[] {
-            createNameColumn(),
-            createSymbolColumn(),
-            createLTPColumn()
-        };
-        this.getColumns().addAll(columns);
+    @FXML
+    private void initialize() {
+        // FXML initialization code if needed
     }
 
-    private TableColumn<LiveStockWrapper, String> createNameColumn() {
-        TableColumn<LiveStockWrapper, String> nameCol = new TableColumn<>("Stock Name");
-        nameCol.setCellValueFactory(cellData -> 
+    private void setupColumnValueFactories() {
+        nameColumn.setCellValueFactory(cellData -> 
             new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStock().getName()));
-        nameCol.setPrefWidth(200);
-        return nameCol;
-    }
-
-    private TableColumn<LiveStockWrapper, String> createSymbolColumn() {
-        TableColumn<LiveStockWrapper, String> symbolCol = new TableColumn<>("Trading Symbol");
-        symbolCol.setCellValueFactory(cellData -> 
+            
+        symbolColumn.setCellValueFactory(cellData -> 
             new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStock().getTrading_symbol()));
-        symbolCol.setPrefWidth(150);
-        return symbolCol;
-    }
-
-    private TableColumn<LiveStockWrapper, Double> createLTPColumn() {
-        TableColumn<LiveStockWrapper, Double> ltpCol = new TableColumn<>("LTP");
-        ltpCol.setCellValueFactory(cellData -> 
+            
+        ltpColumn.setCellValueFactory(cellData -> 
             cellData.getValue().getLiveStock().ltpProperty().asObject());
-        ltpCol.setPrefWidth(100);
-        return ltpCol;
     }
 
     private void setupPlaceholder() {
@@ -86,5 +89,4 @@ public class StockTable extends TableView<LiveStockWrapper> {
     public void setLiveFeedManager(LiveFeedManager liveFeedManager) {
         this.liveFeedManager = liveFeedManager;
     }
-
 } 

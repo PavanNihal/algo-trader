@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<fx:root type="TableView" xmlns:fx="http://javafx.com/fxml/1" styleClass="stocks-table">
+    <columns>
+        <TableColumn fx:id="nameColumn" text="Stock Name" prefWidth="200" minWidth="100">
+            <cellValueFactory>
+                <PropertyValueFactory property="stockName" />
+            </cellValueFactory>
+        </TableColumn>
+        <TableColumn fx:id="symbolColumn" text="Trading Symbol" prefWidth="150" minWidth="80">
+            <cellValueFactory>
+                <PropertyValueFactory property="tradingSymbol" />
+            </cellValueFactory>
+        </TableColumn>
+        <TableColumn fx:id="ltpColumn" text="LTP" prefWidth="100" minWidth="60">
+            <cellValueFactory>
+                <PropertyValueFactory property="ltp" />
+            </cellValueFactory>
+        </TableColumn>
+    </columns>
+    <columnResizePolicy>
+        <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+    </columnResizePolicy>
+</fx:root> 
