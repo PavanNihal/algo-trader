@@ -23,18 +23,18 @@ public class StockTable extends TableView<LiveStock> {
     }
 
     private void setupColumns() {
-        TableColumn<LiveStock, String> nameCol = createNameColumn();
+        TableColumn<LiveStock, String> symbolCol = createSymbolColumn();
         TableColumn<LiveStock, Double> ltpCol = createLTPColumn();        
-        this.getColumns().add(nameCol);
+        this.getColumns().add(symbolCol);
         this.getColumns().add(ltpCol);
     }
 
-    private TableColumn<LiveStock, String> createNameColumn() {
-        TableColumn<LiveStock, String> nameCol = new TableColumn<>("Stock Name");
-        nameCol.setCellValueFactory(cellData -> 
+    private TableColumn<LiveStock, String> createSymbolColumn() {
+        TableColumn<LiveStock, String> symbolCol = new TableColumn<>("Symbol");
+        symbolCol.setCellValueFactory(cellData -> 
             new javafx.beans.property.SimpleStringProperty(cellData.getValue().getInstrument_key()));
-        nameCol.setPrefWidth(200);
-        return nameCol;
+        symbolCol.setPrefWidth(200);
+        return symbolCol;
     }
 
     private TableColumn<LiveStock, Double> createLTPColumn() {

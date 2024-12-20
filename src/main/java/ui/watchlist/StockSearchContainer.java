@@ -13,17 +13,21 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import model.LiveStock;
 import model.Stock;
+
+import java.util.Arrays;
+
+import api.LiveFeedManager;
 import database.DatabaseManager;
-import java.util.stream.Collectors;
 
 public class StockSearchContainer extends VBox {
     private final DatabaseManager dbManager;
     private final StockTable stocksTable;
     private final WatchlistContainer watchlistContainer;
     private final TextField searchField;
-    private final ListView<String> searchResultsView;
-    private final ObservableList<String> allStocks;
-
+    private final ListView<Stock> searchResultsView;
+    private final ObservableList<Stock> allStocks;
+    private  LiveFeedManager liveFeedManager;
+    
     public StockSearchContainer(DatabaseManager dbManager, StockTable stocksTable, WatchlistContainer watchlistContainer) {
         this.dbManager = dbManager;
         this.stocksTable = stocksTable;
@@ -36,11 +40,7 @@ public class StockSearchContainer extends VBox {
         searchResultsView = createSearchResultsView();
         
         // Load all stocks
-        allStocks = FXCollections.observableArrayList(
-            dbManager.getStocksFromDB().stream()
-                .map(Stock::getTrading_symbol)
-                .collect(Collectors.toList())
-        );
+        allStocks = FXCollections.observableArrayList(dbManager.getStocksFromDB());
 
         // Create separate containers for search results and stock table
         VBox searchContainer = new VBox();
@@ -91,18 +91,18 @@ public class StockSearchContainer extends VBox {
         return searchBox;
     }
 
-    private ListView<String> createSearchResultsView() {
-        ListView<String> listView = new ListView<>();
+    private ListView<Stock> createSearchResultsView() {
+        ListView<Stock> listView = new ListView<>();
         listView.setVisible(false);
         listView.setManaged(false);
         listView.getStyleClass().add("search-results");
         
         listView.setCellFactory(lv -> {
-            ListCell<String> cell = new ListCell<String>() {
+            ListCell<Stock> cell = new ListCell<Stock>() {
                 @Override
-                protected void updateItem(String item, boolean empty) {
+                protected void updateItem(Stock item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty ? null : item);
+                    setText(empty ? null : item.getName());
                 }
             };
             cell.getStyleClass().add("search-cell");
@@ -112,14 +112,13 @@ public class StockSearchContainer extends VBox {
         return listView;
     }
 
-
     private void setupSearchFieldListener() {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.trim().isEmpty()) {
                 hideSearchResults();
             } else {
-                ObservableList<String> results = allStocks.filtered(
-                    stock -> stock.toLowerCase().contains(newValue.toLowerCase())
+                ObservableList<Stock> results = allStocks.filtered(
+                    stock -> stock.getName().toLowerCase().contains(newValue.toLowerCase())
                 );
                 
                 searchResultsView.setItems(results);
@@ -199,16 +198,17 @@ public class StockSearchContainer extends VBox {
     }
 
     private void addSelectedStock() {
-        String selected = searchResultsView.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        Stock selectedStock = searchResultsView.getSelectionModel().getSelectedItem();
+        if (selectedStock == null) return;
 
-        LiveStock stock = LiveStock.getInstance(selected);
+        LiveStock stock = LiveStock.getInstance(selectedStock.getInstrument_key());
+        liveFeedManager.subscribe(Arrays.asList(stock.getInstrument_key()));
         stocksTable.getItems().add(stock);
         
-        // Save to watchlist_instruments table
+        // Save to watchlist_instruments table using instrument_key
         var selectedWatchlist = watchlistContainer.getSelectedWatchlist();
         if (selectedWatchlist != null) {
-            dbManager.saveWatchlistInstrument(selected, selectedWatchlist.getId());
+            dbManager.saveWatchlistInstrument(selectedStock.getInstrument_key(), selectedWatchlist.getId());
         }
         
         clearSearch();
@@ -228,5 +228,9 @@ public class StockSearchContainer extends VBox {
     private void hideSearchResults() {
         searchResultsView.setVisible(false);
         searchResultsView.setManaged(false);
+    }
+
+    public void setLiveFeedManager(LiveFeedManager liveFeedManager) {
+        this.liveFeedManager = liveFeedManager;
     }
 } 

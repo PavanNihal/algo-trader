@@ -35,5 +35,6 @@ public class WatchlistPane extends SplitPane {
         stocksTable.setLiveFeedManager(liveFeedManager);
         watchlistContainer.loadWatchlists();
         watchlistContainer.selectFirstWatchlist();
+        searchContainer.setLiveFeedManager(liveFeedManager);
     }
 } 
