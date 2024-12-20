@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -24,27 +25,45 @@ import com.upstox.marketdatafeeder.rpc.proto.MarketDataFeed;
 import io.swagger.client.api.WebsocketApi;
 import model.LiveStock;
 
-public class UpstoxLiveFeeder implements UpstoxFeeder {
+public class UpstoxLiveFeeder implements UpstoxFeeder, Runnable {
     private List<String> instrumentKeys;
     private WebSocketClient client;
     private UpstoxFeedManager upstoxFeedManager;
+    private final String accessToken;
+    private final AtomicBoolean running;
 
     public UpstoxLiveFeeder(String accessToken, UpstoxFeedManager upstoxFeedManager) {
         this.upstoxFeedManager = upstoxFeedManager;
+        this.accessToken = accessToken;
         this.instrumentKeys = new ArrayList<>();
+        this.running = new AtomicBoolean(false);
+    }
+
+    @Override
+    public void run() {        
         try {
+            running.set(true);
             ApiClient authenticatedClient = authenticateApiClient(accessToken);
-
-            // Get authorized WebSocket URI for market data feed
             URI serverUri = getAuthorizedWebSocketUri(authenticatedClient);
-
-            // Create and connect the WebSocket client
             this.client = createWebSocketClient(serverUri);
             this.client.connect();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            running.set(false);
+            upstoxFeedManager.onFeederDisconnected(this);
         }
+    }
+
+    public void shutdown() {
+        if (running.compareAndSet(true, false)) {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    public boolean isRunning() {
+        return running.get();
     }
 
     public void subscribe(String instrumentKey) {
@@ -94,7 +113,6 @@ public class UpstoxLiveFeeder implements UpstoxFeeder {
     private WebSocketClient createWebSocketClient(URI serverUri) {
         UpstoxLiveFeeder thisFeeder = this;
         return new WebSocketClient(serverUri) {
-
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 System.out.println("Opened connection");                
@@ -115,6 +133,7 @@ public class UpstoxLiveFeeder implements UpstoxFeeder {
             public void onClose(int code, String reason, boolean remote) {
                 System.out.println("Connection closed by " + (remote ? "remote peer" : "us") + ". Info: " + reason);
                 upstoxFeedManager.onFeederDisconnected(thisFeeder);
+                running.set(false);
             }
 
             @Override

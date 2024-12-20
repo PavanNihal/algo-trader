@@ -2,6 +2,9 @@ package api.upstox;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +31,19 @@ public class UpstoxFeedManager implements LiveFeedManager {
     private boolean isWorkingDay;
     private boolean isMarketOpen;
     private final Object lock = new Object();
+    private final ExecutorService executorService;
 
     public UpstoxFeedManager() {
         this.liveFeeders = new ArrayList<>();
-        this.instrumentToFeederMap = new HashMap<>();
+        this.instrumentToFeederMap = new ConcurrentHashMap<>();
         this.pendingInstruments = new ArrayList<>();
         this.isWorkingDay = isWorkingDay();
         this.isMarketOpen = isMarketOpen();
+        this.executorService = Executors.newCachedThreadPool(r -> {
+            Thread t = new Thread(r, "UpstoxFeeder-" + System.currentTimeMillis());
+            t.setDaemon(true);
+            return t;
+        });
         System.out.println("isWorkingDay: " + isWorkingDay + ", isMarketOpen: " + isMarketOpen);
     }
 
@@ -60,10 +69,12 @@ public class UpstoxFeedManager implements LiveFeedManager {
                     int requiredFeeders = (int) Math.ceil((double)remainingInstruments / getMaxInstrumentsPerFeeder());
                     for(int i = 0; i < requiredFeeders; i++) {
                         if(isMarketOpen && isWorkingDay) {
-                            new UpstoxLiveFeeder(accessToken, this);
+                            UpstoxLiveFeeder feeder = new UpstoxLiveFeeder(accessToken, this);
+                            executorService.submit(feeder);
                         }
                         else {
-                            new UpstoxPeriodicFeeder(accessToken, this).run();
+                            UpstoxPeriodicFeeder feeder = new UpstoxPeriodicFeeder(accessToken, this);
+                            executorService.submit(feeder);
                         }                        
                     }
 
@@ -103,9 +114,13 @@ public class UpstoxFeedManager implements LiveFeedManager {
                 UpstoxFeeder feeder = entry.getKey();
                 feeder.unsubscribe(entry.getValue());
                 
-                // Shutdown periodic feeder if it has no instruments
-                if (feeder instanceof UpstoxPeriodicFeeder && feeder.getInstrumentCount() == 0) {
-                    ((UpstoxPeriodicFeeder) feeder).shutdown();
+                if (feeder.getInstrumentCount() == 0) {
+                    if (feeder instanceof UpstoxLiveFeeder) {
+                        ((UpstoxLiveFeeder) feeder).shutdown();
+                    } else if (feeder instanceof UpstoxPeriodicFeeder) {
+                        ((UpstoxPeriodicFeeder) feeder).shutdown();
+                    }
+                    liveFeeders.remove(feeder);
                 }
             }
         }
