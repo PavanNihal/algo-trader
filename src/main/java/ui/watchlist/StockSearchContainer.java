@@ -47,6 +47,7 @@ public class StockSearchContainer extends VBox {
         // Create separate containers for search results and stock table
         VBox searchContainer = new VBox();
         searchContainer.getChildren().addAll(searchBox, searchResultsView);
+        searchContainer.setPickOnBounds(false);  // Don't block events when empty space
         
         VBox tableContainer = new VBox();
         tableContainer.getChildren().add(stocksTable);
@@ -55,6 +56,7 @@ public class StockSearchContainer extends VBox {
         // Create stack pane to overlay search results
         StackPane overlayPane = new StackPane();
         overlayPane.getChildren().addAll(tableContainer, searchContainer);
+        overlayPane.setPickOnBounds(false);  // Don't block events on empty space
         
         // Setup alignment for search container
         StackPane.setAlignment(searchContainer, Pos.TOP_CENTER);
@@ -97,7 +99,9 @@ public class StockSearchContainer extends VBox {
         ListView<Stock> listView = new ListView<>();
         listView.setVisible(false);
         listView.setManaged(false);
+        listView.setMouseTransparent(true);  // Initially transparent to mouse events
         listView.getStyleClass().add("search-results");
+        listView.setMaxHeight(200);  // Limit the height of search results
         
         listView.setCellFactory(lv -> {
             ListCell<Stock> cell = new ListCell<Stock>() {
@@ -245,11 +249,13 @@ public class StockSearchContainer extends VBox {
     private void showSearchResults() {
         searchResultsView.setVisible(true);
         searchResultsView.setManaged(true);
+        searchResultsView.setMouseTransparent(false);
     }
 
     private void hideSearchResults() {
         searchResultsView.setVisible(false);
         searchResultsView.setManaged(false);
+        searchResultsView.setMouseTransparent(true);
     }
 
     public void setLiveFeedManager(LiveFeedManager liveFeedManager) {
