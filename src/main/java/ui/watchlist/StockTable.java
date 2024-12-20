@@ -55,10 +55,9 @@ public class StockTable extends TableView<LiveStock> {
         if (!currentInstruments.isEmpty()) {
             liveFeedManager.unsubscribe(currentInstruments);
         }
-
+        
         this.currentInstruments = new ArrayList<>(instrumentKeys);
         this.liveFeedManager.subscribe(instrumentKeys);
-
         ObservableList<LiveStock> stocksData = FXCollections.observableArrayList();
         for (String instrumentKey : instrumentKeys) {
             LiveStock stock = LiveStock.getInstance(instrumentKey);

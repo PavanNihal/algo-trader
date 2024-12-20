@@ -3,6 +3,7 @@ package api.upstox;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class UpstoxLiveFeeder implements UpstoxFeeder {
 
     public UpstoxLiveFeeder(String accessToken, UpstoxFeedManager upstoxFeedManager) {
         this.upstoxFeedManager = upstoxFeedManager;
+        this.instrumentKeys = new ArrayList<>();
         try {
             ApiClient authenticatedClient = authenticateApiClient(accessToken);
 
@@ -41,6 +43,7 @@ public class UpstoxLiveFeeder implements UpstoxFeeder {
             this.client.connect();
         }
         catch(Exception e) {
+            e.printStackTrace();
         }
     }
 

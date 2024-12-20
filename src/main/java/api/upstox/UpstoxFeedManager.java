@@ -2,6 +2,7 @@ package api.upstox;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.BufferedReader;
@@ -203,7 +204,7 @@ public class UpstoxFeedManager implements LiveFeedManager {
             String todayStr = today.format(DateTimeFormatter.ISO_LOCAL_DATE);
             
             // Construct URL with date parameter
-            URL url = new URL("https://api.upstox.com/v2/market/timings?date=" + todayStr);
+            URL url = new URL("https://api.upstox.com/v2/market/timings/" + todayStr);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
