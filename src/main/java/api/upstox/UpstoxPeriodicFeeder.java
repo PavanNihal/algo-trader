@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class UpstoxPeriodicFeeder implements UpstoxFeeder, Runnable {
+public class UpstoxPeriodicFeeder implements UpstoxFeeder {
     private final CopyOnWriteArrayList<String> instrumentKeys;
     private final UpstoxFeedManager upstoxFeedManager;
     private final String accessToken;
-    private final Thread thread;
     private final AtomicBoolean running;
     private static final long REFRESH_INTERVAL = 30000; // 30 seconds refresh interval
     
@@ -17,13 +16,15 @@ public class UpstoxPeriodicFeeder implements UpstoxFeeder, Runnable {
         this.accessToken = accessToken;
         this.upstoxFeedManager = upstoxFeedManager;
         this.instrumentKeys = new CopyOnWriteArrayList<>();
-        this.running = new AtomicBoolean(true);
-        this.thread = new Thread(this);
-        this.thread.start();
+        this.running = new AtomicBoolean(false);
     }
 
     @Override
     public void run() {
+        if (!running.compareAndSet(false, true)) {
+            return;
+        }
+
         try {
             // Register with feed manager when thread starts
             upstoxFeedManager.onFeederConnected(this);
@@ -48,16 +49,10 @@ public class UpstoxPeriodicFeeder implements UpstoxFeeder, Runnable {
         }
     }
 
+    @Override
     public void shutdown() {
-        running.set(false);
-        thread.interrupt();
-        try {
-            thread.join(REFRESH_INTERVAL * 2); // Wait for thread to finish
-        } catch (InterruptedException e) {
+        if (running.compareAndSet(true, false)) {
             Thread.currentThread().interrupt();
-        } finally {
-            // Ensure deregistration happens even if join fails or times out
-            upstoxFeedManager.onFeederDisconnected(this);
         }
     }
 
@@ -95,5 +90,10 @@ public class UpstoxPeriodicFeeder implements UpstoxFeeder, Runnable {
     @Override
     public int getInstrumentCount() {
         return instrumentKeys.size();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 }
