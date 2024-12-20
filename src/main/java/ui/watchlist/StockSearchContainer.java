@@ -139,7 +139,8 @@ public class StockSearchContainer extends VBox {
                 hideSearchResults();
             } else {
                 ObservableList<Stock> results = allStocks.filtered(
-                    stock -> stock.getName().toLowerCase().contains(newValue.toLowerCase())
+                    stock -> stock.getName().toLowerCase().contains(newValue.toLowerCase()) ||
+                            stock.getTrading_symbol().toLowerCase().contains(newValue.toLowerCase())
                 );
                 
                 searchResultsView.setItems(results);
