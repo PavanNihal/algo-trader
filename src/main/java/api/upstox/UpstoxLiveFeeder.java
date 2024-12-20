@@ -25,7 +25,7 @@ import com.upstox.marketdatafeeder.rpc.proto.MarketDataFeed;
 import io.swagger.client.api.WebsocketApi;
 import model.LiveStock;
 
-public class UpstoxLiveFeeder implements UpstoxFeeder, Runnable {
+public class UpstoxLiveFeeder implements UpstoxFeeder {
     private List<String> instrumentKeys;
     private WebSocketClient client;
     private UpstoxFeedManager upstoxFeedManager;

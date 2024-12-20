@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.BufferedReader;
@@ -200,7 +199,6 @@ public class UpstoxFeedManager implements LiveFeedManager {
 
             // Check if all exchanges are closed
             JSONObject holiday = holidays.getJSONObject(0);
-            JSONArray closedExchanges = holiday.getJSONArray("closed_exchanges");
             JSONArray openExchanges = holiday.getJSONArray("open_exchanges");
             
             // If there are open exchanges, it's a working day
