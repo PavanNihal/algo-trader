@@ -11,6 +11,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Label;
 import model.LiveStock;
 import model.Stock;
 
@@ -99,10 +101,29 @@ public class StockSearchContainer extends VBox {
         
         listView.setCellFactory(lv -> {
             ListCell<Stock> cell = new ListCell<Stock>() {
+                private final BorderPane content = new BorderPane();
+                private final Label nameLabel = new Label();
+                private final Label symbolLabel = new Label();
+                
+                {
+                    symbolLabel.getStyleClass().add("trading-symbol");
+                    symbolLabel.setStyle("-fx-text-fill: #666666;"); // Lighter font color
+                    BorderPane.setMargin(symbolLabel, new Insets(0, 5, 0, 0)); // Right margin
+                    
+                    content.setLeft(nameLabel);
+                    content.setRight(symbolLabel);
+                }
+                
                 @Override
                 protected void updateItem(Stock item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty ? null : item.getName());
+                    if (empty || item == null) {
+                        setGraphic(null);
+                    } else {
+                        nameLabel.setText(item.getName());
+                        symbolLabel.setText(item.getTrading_symbol());
+                        setGraphic(content);
+                    }
                 }
             };
             cell.getStyleClass().add("search-cell");
