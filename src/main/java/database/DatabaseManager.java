@@ -287,17 +287,37 @@ public class DatabaseManager {
         }
     }
 
-    public List<String> getWatchlistInstruments(int watchlistId) {
-        List<String> instruments = new ArrayList<>();
+    public List<Stock> getWatchlistInstruments(int watchlistId) {
+        List<Stock> stocks = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT instrument_key FROM watchlist_instruments WHERE watchlist_id = " + watchlistId)) {
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT i.* FROM watchlist_instruments wi " +
+                 "JOIN instruments i ON wi.instrument_key = i.instrument_key " +
+                 "WHERE wi.watchlist_id = ?"
+             )) {
+            stmt.setInt(1, watchlistId);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                instruments.add(rs.getString("instrument_key"));
+                String symbol = rs.getString("trading_symbol");
+                String name = rs.getString("name");
+                Stock stock = new Stock(symbol, name);
+                stock.setIsin(rs.getString("isin"));
+                stock.setExchange(rs.getString("exchange"));
+                stock.setInstrument_type(rs.getString("instrument_type"));
+                stock.setInstrument_key(rs.getString("instrument_key"));
+                stock.setLot_size(rs.getInt("lot_size"));
+                stock.setFreeze_quantity(rs.getInt("freeze_quantity"));
+                stock.setExchange_token(rs.getString("exchange_token"));
+                stock.setTick_size(rs.getDouble("tick_size"));
+                stock.setTrading_symbol(rs.getString("trading_symbol"));
+                stock.setShort_name(rs.getString("short_name"));
+                stock.setQty_multiplier(rs.getInt("qty_multiplier"));
+                stock.setSecurity_type(rs.getString("security_type"));
+                stocks.add(stock);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return instruments;
+        return stocks;
     }
 } 

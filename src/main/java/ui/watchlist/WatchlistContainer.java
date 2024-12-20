@@ -8,6 +8,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import model.Stock;
 import model.Watchlist;
 import database.DatabaseManager;
 import java.util.List;
@@ -133,8 +134,8 @@ public class WatchlistContainer extends VBox {
 
     private void loadWatchlistData(Watchlist watchlist) {
         if (watchlist == null) return;
-        List<String> instrumentKeys = dbManager.getWatchlistInstruments(watchlist.getId());
-        stocksTable.loadStocks(instrumentKeys);
+        List<Stock> stocks = dbManager.getWatchlistInstruments(watchlist.getId());
+        stocksTable.loadStocks(stocks);
     }
 
     public Watchlist getSelectedWatchlist() {

@@ -6,12 +6,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import model.LiveStock;
+import model.Stock;
+
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import api.LiveFeedManager;
 
-public class StockTable extends TableView<LiveStock> {
+public class StockTable extends TableView<LiveStockWrapper> {
     private LiveFeedManager liveFeedManager;
     private List<String> currentInstruments;
     
@@ -23,24 +26,35 @@ public class StockTable extends TableView<LiveStock> {
     }
 
     private void setupColumns() {
-        TableColumn<LiveStock, String> symbolCol = createSymbolColumn();
-        TableColumn<LiveStock, Double> ltpCol = createLTPColumn();        
-        this.getColumns().add(symbolCol);
-        this.getColumns().add(ltpCol);
+        @SuppressWarnings("unchecked")
+        TableColumn<LiveStockWrapper, ?>[] columns = new TableColumn[] {
+            createNameColumn(),
+            createSymbolColumn(),
+            createLTPColumn()
+        };
+        this.getColumns().addAll(columns);
     }
 
-    private TableColumn<LiveStock, String> createSymbolColumn() {
-        TableColumn<LiveStock, String> symbolCol = new TableColumn<>("Symbol");
+    private TableColumn<LiveStockWrapper, String> createNameColumn() {
+        TableColumn<LiveStockWrapper, String> nameCol = new TableColumn<>("Stock Name");
+        nameCol.setCellValueFactory(cellData -> 
+            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStock().getName()));
+        nameCol.setPrefWidth(200);
+        return nameCol;
+    }
+
+    private TableColumn<LiveStockWrapper, String> createSymbolColumn() {
+        TableColumn<LiveStockWrapper, String> symbolCol = new TableColumn<>("Trading Symbol");
         symbolCol.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getInstrument_key()));
-        symbolCol.setPrefWidth(200);
+            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStock().getTrading_symbol()));
+        symbolCol.setPrefWidth(150);
         return symbolCol;
     }
 
-    private TableColumn<LiveStock, Double> createLTPColumn() {
-        TableColumn<LiveStock, Double> ltpCol = new TableColumn<>("LTP");
+    private TableColumn<LiveStockWrapper, Double> createLTPColumn() {
+        TableColumn<LiveStockWrapper, Double> ltpCol = new TableColumn<>("LTP");
         ltpCol.setCellValueFactory(cellData -> 
-            cellData.getValue().ltpProperty().asObject());
+            cellData.getValue().getLiveStock().ltpProperty().asObject());
         ltpCol.setPrefWidth(100);
         return ltpCol;
     }
@@ -51,17 +65,20 @@ public class StockTable extends TableView<LiveStock> {
         this.setPlaceholder(placeholder);
     }
 
-    public void loadStocks(List<String> instrumentKeys) {
+    public void loadStocks(List<Stock> stocks) {
         if (!currentInstruments.isEmpty()) {
             liveFeedManager.unsubscribe(currentInstruments);
         }
         
-        this.currentInstruments = new ArrayList<>(instrumentKeys);
-        this.liveFeedManager.subscribe(instrumentKeys);
-        ObservableList<LiveStock> stocksData = FXCollections.observableArrayList();
-        for (String instrumentKey : instrumentKeys) {
-            LiveStock stock = LiveStock.getInstance(instrumentKey);
-            stocksData.add(stock);
+        this.currentInstruments = new ArrayList<>(stocks.stream()
+            .map(Stock::getInstrument_key)
+            .collect(Collectors.toList()));
+            
+        this.liveFeedManager.subscribe(this.currentInstruments);
+        ObservableList<LiveStockWrapper> stocksData = FXCollections.observableArrayList();
+        for (Stock stock : stocks) {
+            LiveStock liveStock = LiveStock.getInstance(stock.getInstrument_key());
+            stocksData.add(new LiveStockWrapper(liveStock, stock));
         }
         this.setItems(stocksData);
     }
@@ -69,4 +86,5 @@ public class StockTable extends TableView<LiveStock> {
     public void setLiveFeedManager(LiveFeedManager liveFeedManager) {
         this.liveFeedManager = liveFeedManager;
     }
+
 } 

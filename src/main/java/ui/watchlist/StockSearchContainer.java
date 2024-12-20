@@ -224,7 +224,7 @@ public class StockSearchContainer extends VBox {
 
         LiveStock stock = LiveStock.getInstance(selectedStock.getInstrument_key());
         liveFeedManager.subscribe(Arrays.asList(stock.getInstrument_key()));
-        stocksTable.getItems().add(stock);
+        stocksTable.getItems().add(new LiveStockWrapper(stock, selectedStock));
         
         // Save to watchlist_instruments table using instrument_key
         var selectedWatchlist = watchlistContainer.getSelectedWatchlist();
