@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<fx:root type="VBox" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <StackPane fx:id="overlayPane" VBox.vgrow="ALWAYS">
+        <!-- Table Container -->
+        <VBox>
+            <VBox fx:id="tableContainer">
+                <padding>
+                    <Insets top="30"/>
+                </padding>
+            </VBox>
+        </VBox>
+        
+        <!-- Search Container -->
+        <VBox fx:id="searchContainer" StackPane.alignment="TOP_CENTER" pickOnBounds="false">
+            <HBox fx:id="searchBox" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search stocks to add to watchlist..." 
+                          styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="clearButton" text="✕" styleClass="clear-button" visible="false"/>
+            </HBox>
+            
+            <ListView fx:id="searchResultsView" styleClass="search-results" 
+                      visible="false" managed="false" mouseTransparent="true" maxHeight="200"/>
+        </VBox>
+    </StackPane>
+</fx:root> 

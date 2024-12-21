@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<fx:root type="VBox" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17"
+         styleClass="watchlist-container">
+    
+    <!-- Header -->
+    <HBox fx:id="header" styleClass="watchlist-header">
+        <Label fx:id="watchlistsLabel" text="Watchlists" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addWatchlistButton" text="+" styleClass="add-watchlist-button"/>
+    </HBox>
+    
+    <!-- Watchlist View -->
+    <ListView fx:id="watchlistsView" styleClass="watchlist-view" VBox.vgrow="ALWAYS"/>
+    
+</fx:root> 
