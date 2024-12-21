@@ -31,6 +31,7 @@ public class UpstoxFeedManager implements LiveFeedManager {
     private boolean isMarketOpen;
     private final Object lock = new Object();
     private final ExecutorService executorService;
+    private UpstoxLTPFetcher ltpFetcher;
 
     public UpstoxFeedManager() {
         this.liveFeeders = new ArrayList<>();
@@ -49,11 +50,32 @@ public class UpstoxFeedManager implements LiveFeedManager {
     @Override
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+        startLTPFetcher();
+    }
+
+    private void startLTPFetcher() {
+        synchronized (lock) {
+            if (ltpFetcher != null && ltpFetcher.isRunning()) {
+                ltpFetcher.shutdown();
+            }
+            
+            Thread thread = new Thread(new UpstoxLTPFetcher(accessToken, this), "UpstoxLTPFetcher-" + System.currentTimeMillis());
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
+
+    public void restartLTPFetcher() {
+        startLTPFetcher();
     }
 
     @Override
     public void subscribe(List<String> instrumentKeys) {
         synchronized (lock) {
+            if (ltpFetcher != null && ltpFetcher.isRunning()) {
+                ltpFetcher.queueFetchRequest(instrumentKeys);
+            }
+            
             int instrumentIndex = 0;
             int feederIndex = 0;
             for(; instrumentIndex < instrumentKeys.size(); ) {
@@ -264,5 +286,13 @@ public class UpstoxFeedManager implements LiveFeedManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void onLTPFetcherConnected(UpstoxLTPFetcher ltpFetcher) {
+        this.ltpFetcher = ltpFetcher;
+    }
+
+    public void onLTPFetcherDisconnected(UpstoxLTPFetcher ltpFetcher) {
+        this.ltpFetcher = null;
     }
 }
