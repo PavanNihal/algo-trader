@@ -1,6 +1,8 @@
 package ui.watchlist;
 
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -11,61 +13,52 @@ import javafx.scene.layout.VBox;
 import model.Stock;
 import model.Watchlist;
 import database.DatabaseManager;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public class WatchlistContainer extends VBox {
     private final DatabaseManager dbManager;
-    private final ListView<Watchlist> watchlistsView;
     private final StockTable stocksTable;
 
+    @FXML
+    private ListView<Watchlist> watchlistsView;
+    @FXML
+    private Button addWatchlistButton;
+    
     public WatchlistContainer(DatabaseManager dbManager, StockTable stocksTable) {
         this.dbManager = dbManager;
         this.stocksTable = stocksTable;
-        this.getStyleClass().add("watchlist-container");
+        
+        // Load FXML
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/WatchlistContainer.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        // Create components
-        Label watchlistsLabel = new Label("Watchlists");
-        Button addWatchlistButton = new Button("+");
-        addWatchlistButton.getStyleClass().add("add-watchlist-button");
+        // Initialize watchlistsView
+        watchlistsView.setItems(FXCollections.observableArrayList());
         
-        // Create header
-        HBox header = createHeader(watchlistsLabel, addWatchlistButton);
-        
-        // Initialize watchlistsView without data
-        watchlistsView = createWatchlistView(FXCollections.observableArrayList());
-        
-        // Setup add button functionality
-        setupAddWatchlistButton(addWatchlistButton);
-        
-        // Add components to container
-        this.getChildren().addAll(header, watchlistsView);
+        // Setup components
+        setupWatchlistCellFactory();
+        setupAddWatchlistButton();
+        setupWatchlistSelection();
     }
 
-    private HBox createHeader(Label watchlistsLabel, Button addWatchlistButton) {
-        HBox header = new HBox();
-        header.getStyleClass().add("watchlist-header");
-        HBox.setHgrow(watchlistsLabel, Priority.ALWAYS);
-        header.getChildren().addAll(watchlistsLabel, addWatchlistButton);
-        return header;
-    }
-
-    private ListView<Watchlist> createWatchlistView(List<Watchlist> watchlists) {
-        ListView<Watchlist> listView = new ListView<>();
-        listView.getStyleClass().add("watchlist-view");
-        listView.setItems(FXCollections.observableArrayList(watchlists));
-        listView.getSelectionModel().selectedItemProperty().addListener(
+    private void setupWatchlistSelection() {
+        watchlistsView.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> loadWatchlistData(newValue)
         );
-        VBox.setVgrow(listView, Priority.ALWAYS);
-        
-        setupWatchlistCellFactory(listView);
-        
-        return listView;
     }
 
-    private void setupWatchlistCellFactory(ListView<Watchlist> listView) {
-        listView.setCellFactory(lv -> new javafx.scene.control.ListCell<Watchlist>() {
+    private void setupWatchlistCellFactory() {
+        watchlistsView.setCellFactory(lv -> new javafx.scene.control.ListCell<Watchlist>() {
             private final Button deleteButton = new Button("-");
             private final HBox cell = new HBox();
             private final Label label = new Label();
@@ -100,7 +93,7 @@ public class WatchlistContainer extends VBox {
                     label.setText(item.getName());
                     deleteButton.setOnAction(event -> {
                         dbManager.deleteWatchlist(item);
-                        listView.getItems().remove(item);
+                        watchlistsView.getItems().remove(item);
                     });
                     
                     setOnMouseEntered(event -> deleteButton.setVisible(true));
@@ -112,7 +105,7 @@ public class WatchlistContainer extends VBox {
         });
     }
 
-    private void setupAddWatchlistButton(Button addWatchlistButton) {
+    private void setupAddWatchlistButton() {
         addWatchlistButton.setOnAction(e -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("New Watchlist");
@@ -146,7 +139,6 @@ public class WatchlistContainer extends VBox {
         watchlistsView.getSelectionModel().selectFirst();
     }
 
-    // Added a method to load watchlists
     public void loadWatchlists() {
         List<Watchlist> watchlists = dbManager.getWatchlists();
         watchlistsView.setItems(FXCollections.observableArrayList(watchlists));
