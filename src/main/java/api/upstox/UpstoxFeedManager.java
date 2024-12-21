@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import api.LiveFeedManager;
 
@@ -26,7 +29,7 @@ public class UpstoxFeedManager implements LiveFeedManager {
     private String accessToken;
     private final List<UpstoxFeeder> liveFeeders;
     private final Map<String, UpstoxFeeder> instrumentToFeederMap;
-    private final List<String> pendingInstruments;
+    private final Set<String> pendingInstruments;
     private boolean isWorkingDay;
     private boolean isMarketOpen;
     private final Object lock = new Object();
@@ -36,7 +39,7 @@ public class UpstoxFeedManager implements LiveFeedManager {
     public UpstoxFeedManager() {
         this.liveFeeders = new ArrayList<>();
         this.instrumentToFeederMap = new ConcurrentHashMap<>();
-        this.pendingInstruments = new ArrayList<>();
+        this.pendingInstruments = new HashSet<>();
         this.isWorkingDay = isWorkingDay();
         this.isMarketOpen = isMarketOpen();
         this.executorService = Executors.newCachedThreadPool(r -> {
@@ -70,10 +73,15 @@ public class UpstoxFeedManager implements LiveFeedManager {
     }
 
     @Override
-    public void subscribe(List<String> instrumentKeys) {
-        synchronized (lock) {
+    public void subscribe(List<String> instrumentKeys) {        
+        synchronized (lock) {            
             if (ltpFetcher != null && ltpFetcher.isRunning()) {
                 ltpFetcher.queueFetchRequest(instrumentKeys);
+            }
+
+            if(!isMarketOpen || !isWorkingDay) {
+                pendingInstruments.addAll(instrumentKeys);
+                return;
             }
             
             int instrumentIndex = 0;
@@ -89,14 +97,8 @@ public class UpstoxFeedManager implements LiveFeedManager {
                     int remainingInstruments = instrumentKeys.size() - instrumentIndex;
                     int requiredFeeders = (int) Math.ceil((double)remainingInstruments / getMaxInstrumentsPerFeeder());
                     for(int i = 0; i < requiredFeeders; i++) {
-                        if(isMarketOpen && isWorkingDay) {
-                            UpstoxLiveFeeder feeder = new UpstoxLiveFeeder(accessToken, this);
-                            executorService.submit(feeder);
-                        }
-                        else {
-                            UpstoxPeriodicFeeder feeder = new UpstoxPeriodicFeeder(accessToken, this);
-                            executorService.submit(feeder);
-                        }                        
+                        UpstoxLiveFeeder feeder = new UpstoxLiveFeeder(accessToken, this);
+                        executorService.submit(feeder);                        
                     }
 
                     pendingInstruments.addAll(instrumentKeys.subList(instrumentIndex, instrumentKeys.size()));
@@ -123,7 +125,8 @@ public class UpstoxFeedManager implements LiveFeedManager {
             
             for(String instrumentKey : instrumentKeys) {
                 UpstoxFeeder feeder = instrumentToFeederMap.get(instrumentKey);
-                if(feeder == null) {
+                pendingInstruments.remove(instrumentKey);
+                if(feeder == null) {                    
                     continue;
                 }
                 
@@ -154,11 +157,14 @@ public class UpstoxFeedManager implements LiveFeedManager {
                 List<String> instrumentsToAdd = new ArrayList<>();
                 int remainingCapacity = getMaxInstrumentsPerFeeder() - feeder.getInstrumentCount();
                 
-                int instrumentsToTake = Math.min(remainingCapacity, pendingInstruments.size());
-                for (int i = 0; i < instrumentsToTake; i++) {
-                    String instrumentKey = pendingInstruments.remove(0);
+                Iterator<String> iterator = pendingInstruments.iterator();
+                int count = 0;
+                while (iterator.hasNext() && count < remainingCapacity) {
+                    String instrumentKey = iterator.next();
                     instrumentsToAdd.add(instrumentKey);
                     instrumentToFeederMap.put(instrumentKey, feeder);
+                    iterator.remove();
+                    count++;
                 }
                 
                 if (!instrumentsToAdd.isEmpty()) {
