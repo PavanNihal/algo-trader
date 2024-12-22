@@ -59,7 +59,7 @@ public class WatchlistContainer extends VBox {
 
     private void setupWatchlistCellFactory() {
         watchlistsView.setCellFactory(lv -> new javafx.scene.control.ListCell<Watchlist>() {
-            private final Button deleteButton = new Button("-");
+            private final Button deleteButton = new Button("x");
             private final HBox cell = new HBox();
             private final Label label = new Label();
             
@@ -68,7 +68,7 @@ public class WatchlistContainer extends VBox {
             }
 
             private void setupCellComponents() {
-                deleteButton.getStyleClass().add("delete-watchlist-button");
+                deleteButton.getStyleClass().add("delete-button");
                 deleteButton.setVisible(false);
                 cell.getChildren().addAll(label, deleteButton);
                 cell.setSpacing(10);
