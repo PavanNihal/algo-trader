@@ -128,6 +128,7 @@ public class WatchlistContainer extends VBox {
     private void loadWatchlistData(Watchlist watchlist) {
         if (watchlist == null) return;
         List<Stock> stocks = dbManager.getWatchlistInstruments(watchlist.getId());
+        stocksTable.setWatchlistId(watchlist.getId());
         stocksTable.loadStocks(stocks);
     }
 

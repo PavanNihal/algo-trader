@@ -21,6 +21,7 @@
                 <PropertyValueFactory property="ltp" />
             </cellValueFactory>
         </TableColumn>
+        <TableColumn fx:id="deleteColumn" text="" prefWidth="40" minWidth="40" />
     </columns>
     <columnResizePolicy>
         <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />

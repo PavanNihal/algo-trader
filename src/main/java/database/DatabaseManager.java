@@ -320,4 +320,18 @@ public class DatabaseManager {
         }
         return stocks;
     }
+
+    public void deleteWatchlistInstrument(String instrumentKey, int watchlistId) {
+        System.out.println("Deleting instrument: " + instrumentKey + " from watchlist: " + watchlistId);
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL);
+             PreparedStatement pstmt = conn.prepareStatement(
+                 "DELETE FROM watchlist_instruments WHERE instrument_key = ? AND watchlist_id = ?"
+             )) {
+            pstmt.setString(1, instrumentKey);
+            pstmt.setInt(2, watchlistId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 } 
