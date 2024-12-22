@@ -46,6 +46,17 @@
 
 .watchlist-view .list-cell:hover {
     -fx-background-color: #808080;
+}
+
+.watchlist-view .list-cell:hover .label {
+    -fx-text-fill: white;
+}
+
+.watchlist-view .list-cell:selected {
+    -fx-background-color: #0096c9;
+}
+
+.watchlist-view .list-cell:selected .label {
     -fx-text-fill: white;
 }
 
