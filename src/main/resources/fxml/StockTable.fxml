@@ -6,24 +6,24 @@
 
 <fx:root type="TableView" xmlns:fx="http://javafx.com/fxml/1" styleClass="stocks-table">
     <columns>
-        <TableColumn fx:id="nameColumn" text="Stock Name" prefWidth="200" minWidth="100">
+        <TableColumn fx:id="nameColumn" text="Stock Name" prefWidth="200" minWidth="100" maxWidth="300">
             <cellValueFactory>
                 <PropertyValueFactory property="stockName" />
             </cellValueFactory>
         </TableColumn>
-        <TableColumn fx:id="symbolColumn" text="Trading Symbol" prefWidth="150" minWidth="80">
+        <TableColumn fx:id="symbolColumn" text="Trading Symbol" prefWidth="140" minWidth="80" maxWidth="150">
             <cellValueFactory>
                 <PropertyValueFactory property="tradingSymbol" />
             </cellValueFactory>
         </TableColumn>
-        <TableColumn fx:id="ltpColumn" text="LTP" prefWidth="100" minWidth="60">
+        <TableColumn fx:id="ltpColumn" text="LTP" prefWidth="120" minWidth="20" maxWidth="150">
             <cellValueFactory>
                 <PropertyValueFactory property="ltp" />
             </cellValueFactory>
         </TableColumn>
-        <TableColumn fx:id="deleteColumn" text="" prefWidth="40" minWidth="40" />
+        <TableColumn fx:id="deleteColumn" text="" prefWidth="40" minWidth="40" maxWidth="40" />
     </columns>
     <columnResizePolicy>
-        <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
     </columnResizePolicy>
 </fx:root> 
