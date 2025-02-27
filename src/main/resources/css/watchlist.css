@@ -4,6 +4,7 @@
 .watchlist-container {
     -fx-padding: 10;
     -fx-spacing: 10;
+    -fx-background-color: #f0f0f0;
 }
 
 /* Header Styles */
@@ -32,32 +33,40 @@
 /* Watchlist ListView */
 .watchlist-view {
     -fx-pref-width: 200;
-    -fx-background-color: white;
+    -fx-background-color: #f0f0f0;
 }
 
 .watchlist-view .list-cell {
-    -fx-text-fill: black;
-}
-
-.watchlist-view .list-cell:selected {
-    -fx-background-color: #0096c9;
-    -fx-text-fill: white;
+    -fx-text-fill: #555555;
+    -fx-background-color: transparent;
+    -fx-padding: 10 5;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: transparent;
 }
 
 .watchlist-view .list-cell:hover {
-    -fx-background-color: #808080;
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-text-fill: #222222;
 }
 
 .watchlist-view .list-cell:hover .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #222222;
 }
 
 .watchlist-view .list-cell:selected {
-    -fx-background-color: #0096c9;
+    -fx-background-color: transparent;
+    -fx-text-fill: #0096c9;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #0096c9;
 }
 
 .watchlist-view .list-cell:selected .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #0096c9;
+    -fx-font-weight: bold;
 }
 
 /* Stocks Table */
@@ -111,8 +120,28 @@
 } 
 
 /* Delete Watchlist Button */
-.delete-watchlist-button {
-    -fx-background-color: red;
+.delete-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 100;
+    -fx-border-radius: 100;
+    -fx-border-width: 0;
+    -fx-padding: 2 7;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d1515;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.delete-button:hover {
+    -fx-background-color: rgba(255, 0, 0, 0.1);
+    -fx-border-color: rgba(255, 0, 0, 0.3);
+    -fx-text-fill: #ff3333;
+}
+
+.delete-button:pressed {
+    -fx-background-color: rgba(255, 0, 0,.2);
+    -fx-text-fill: #ff0000;
 }
 
 /* Search Components */
