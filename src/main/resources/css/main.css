@@ -1,3 +1,35 @@
 .root {
     -fx-font-family: 'Arial';
 }
+
+/* Navigation button styles */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-padding: 10 15;
+    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-font-weight: normal;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 0 0 2 0;
+}
+
+.nav-button:hover {
+    -fx-text-fill: #222222;
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nav-button-selected {
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: #0096c9;
+    -fx-text-fill: #0096c9;
+    -fx-font-weight: bold;
+}
+
+.nav-panel {
+    -fx-background-color: #f0f0f0;
+}

@@ -22,7 +22,7 @@ public class HomePanel extends BorderPane {
         // Create the left side panel with options
         VBox leftPanel = new VBox(10); // 10 pixels spacing
         leftPanel.setPadding(new Insets(10));
-        leftPanel.setStyle("-fx-background-color: #f0f0f0;");
+        leftPanel.getStyleClass().add("nav-panel");
         leftPanel.setPrefWidth(200);
         leftPanel.setAlignment(Pos.CENTER); // Center align vertically
 
@@ -35,8 +35,16 @@ public class HomePanel extends BorderPane {
         Button portfolioBtn = new Button("Portfolio"); 
         Button strategyBtn = new Button("Strategy Builder");
         
+        // Apply style classes to buttons
+        watchlistBtn.getStyleClass().add("nav-button");
+        portfolioBtn.getStyleClass().add("nav-button");
+        strategyBtn.getStyleClass().add("nav-button");
+        
+        // Set the first button as selected by default
+        watchlistBtn.getStyleClass().add("nav-button-selected");
+        
         // Add spacing between buttons
-        VBox buttonGroup = new VBox(15); // 15px spacing between buttons
+        VBox buttonGroup = new VBox(5); // 5px spacing between buttons
         buttonGroup.setAlignment(Pos.CENTER);
         buttonGroup.getChildren().addAll(watchlistBtn, portfolioBtn, strategyBtn);
 
@@ -63,15 +71,35 @@ public class HomePanel extends BorderPane {
         splitPane.getItems().addAll(leftPanel, watchlistPane);
         splitPane.setDividerPositions(0.2); // Initial divider position at 20%
 
-        // Add click handlers to update only the right pane
+        // Add click handlers to update only the right pane and handle button selection state
         watchlistBtn.setOnAction(e -> {
+            // Update the content pane
             splitPane.getItems().set(1, watchlistPane);
+            
+            // Update button selection states
+            watchlistBtn.getStyleClass().add("nav-button-selected");
+            portfolioBtn.getStyleClass().remove("nav-button-selected");
+            strategyBtn.getStyleClass().remove("nav-button-selected");
         });
+        
         portfolioBtn.setOnAction(e -> {
+            // Update the content pane
             splitPane.getItems().set(1, portfolioPane);
+            
+            // Update button selection states
+            watchlistBtn.getStyleClass().remove("nav-button-selected");
+            portfolioBtn.getStyleClass().add("nav-button-selected");
+            strategyBtn.getStyleClass().remove("nav-button-selected");
         });
+        
         strategyBtn.setOnAction(e -> {
+            // Update the content pane
             splitPane.getItems().set(1, strategyBuilderPane);
+            
+            // Update button selection states
+            watchlistBtn.getStyleClass().remove("nav-button-selected");
+            portfolioBtn.getStyleClass().remove("nav-button-selected");
+            strategyBtn.getStyleClass().add("nav-button-selected");
         });
 
         setCenter(splitPane);
