@@ -2,11 +2,13 @@ package ui;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.control.Button;
 
 import api.LiveFeedManager;
 import database.DatabaseManager;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.SplitPane;
 import ui.watchlist.WatchlistPane;
 
@@ -22,18 +24,32 @@ public class HomePanel extends BorderPane {
         leftPanel.setPadding(new Insets(10));
         leftPanel.setStyle("-fx-background-color: #f0f0f0;");
         leftPanel.setPrefWidth(200);
+        leftPanel.setAlignment(Pos.CENTER); // Center align vertically
 
+        // Create spacer for top
+        VBox topSpacer = new VBox();
+        VBox.setVgrow(topSpacer, Priority.ALWAYS);
+        
         // Create buttons for each option
         Button watchlistBtn = new Button("Watchlist");
         Button portfolioBtn = new Button("Portfolio"); 
         Button strategyBtn = new Button("Strategy Builder");
+        
+        // Add spacing between buttons
+        VBox buttonGroup = new VBox(15); // 15px spacing between buttons
+        buttonGroup.setAlignment(Pos.CENTER);
+        buttonGroup.getChildren().addAll(watchlistBtn, portfolioBtn, strategyBtn);
+
+        // Create spacer for bottom
+        VBox bottomSpacer = new VBox();
+        VBox.setVgrow(bottomSpacer, Priority.ALWAYS);
 
         // Style the buttons
         watchlistBtn.setMaxWidth(Double.MAX_VALUE);
         portfolioBtn.setMaxWidth(Double.MAX_VALUE);
         strategyBtn.setMaxWidth(Double.MAX_VALUE);
 
-        leftPanel.getChildren().addAll(watchlistBtn, portfolioBtn, strategyBtn);
+        leftPanel.getChildren().addAll(topSpacer, buttonGroup, bottomSpacer);
 
         // Initialize the content panes with token already available
         watchlistPane = new WatchlistPane(dbManager);
