@@ -1,8 +1,13 @@
 package ui.watchlist;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Button;
@@ -10,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import model.LiveStock;
 import model.Stock;
 import database.DatabaseManager;
@@ -18,6 +24,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import api.LiveFeedManager;
 
@@ -25,6 +33,8 @@ public class StockTable extends TableView<LiveStockWrapper> {
     private LiveFeedManager liveFeedManager;
     private List<String> currentInstruments;
     private int watchlistId;
+    private Map<String, Double> previousLtpValues = new HashMap<>();
+    private Map<String, ChangeListener<Number>> ltpListeners = new HashMap<>();
 
     @FXML
     private TableColumn<LiveStockWrapper, String> nameColumn;
@@ -68,6 +78,49 @@ public class StockTable extends TableView<LiveStockWrapper> {
             
         ltpColumn.setCellValueFactory(cellData -> 
             cellData.getValue().getLiveStock().ltpProperty().asObject());
+            
+        ltpColumn.setCellFactory(column -> new TableCell<LiveStockWrapper, Double>() {
+            private final Timeline flashTimeline = new Timeline();
+            
+            {
+                flashTimeline.getKeyFrames().add(
+                    new KeyFrame(Duration.millis(800), event -> getStyleClass().removeAll("price-up-flash", "price-down-flash"))
+                );
+                flashTimeline.setCycleCount(1);
+            }
+
+            @Override
+            protected void updateItem(Double ltp, boolean empty) {
+                super.updateItem(ltp, empty);
+                
+                if (empty || ltp == null) {
+                    setText(null);
+                    return;
+                }
+                
+                setText(String.format("%.2f", ltp));
+                
+                LiveStockWrapper wrapper = getTableView().getItems().get(getIndex());
+                if (wrapper != null) {
+                    String instrumentKey = wrapper.getStock().getInstrument_key();
+                    Double previousLtp = previousLtpValues.get(instrumentKey);
+                    
+                    if (previousLtp != null && !previousLtp.equals(ltp)) {
+                        getStyleClass().removeAll("price-up-flash", "price-down-flash");
+                        
+                        if (ltp > previousLtp) {
+                            getStyleClass().add("price-up-flash");
+                        } else if (ltp < previousLtp) {
+                            getStyleClass().add("price-down-flash");
+                        }
+                        
+                        flashTimeline.playFromStart();
+                    }
+                    
+                    previousLtpValues.put(instrumentKey, ltp);
+                }
+            }
+        });
 
         deleteColumn.setCellFactory(col -> {
             return new javafx.scene.control.TableCell<LiveStockWrapper, Node>() {
@@ -117,10 +170,15 @@ public class StockTable extends TableView<LiveStockWrapper> {
 
     private void handleDeleteStock(LiveStockWrapper stockWrapper) {
         Stock stock = stockWrapper.getStock();
-        DatabaseManager.getInstance().deleteWatchlistInstrument(stock.getInstrument_key(), watchlistId);
+        String instrumentKey = stock.getInstrument_key();
+        
+        // Remove LTP listener if it exists
+        previousLtpValues.remove(instrumentKey);
+        
+        DatabaseManager.getInstance().deleteWatchlistInstrument(instrumentKey, watchlistId);
         getItems().remove(stockWrapper);
-        currentInstruments.remove(stock.getInstrument_key());
-        liveFeedManager.unsubscribe(List.of(stock.getInstrument_key()));
+        currentInstruments.remove(instrumentKey);
+        liveFeedManager.unsubscribe(List.of(instrumentKey));
     }
 
     private void setupPlaceholder() {
@@ -130,6 +188,9 @@ public class StockTable extends TableView<LiveStockWrapper> {
     }
 
     public void loadStocks(List<Stock> stocks) {
+        // Clear previous values
+        previousLtpValues.clear();
+        
         if (!currentInstruments.isEmpty()) {
             liveFeedManager.unsubscribe(currentInstruments);
         }
@@ -140,10 +201,17 @@ public class StockTable extends TableView<LiveStockWrapper> {
             
         this.liveFeedManager.subscribe(this.currentInstruments);
         ObservableList<LiveStockWrapper> stocksData = FXCollections.observableArrayList();
+        
         for (Stock stock : stocks) {
-            LiveStock liveStock = LiveStock.getInstance(stock.getInstrument_key());
+            String instrumentKey = stock.getInstrument_key();
+            LiveStock liveStock = LiveStock.getInstance(instrumentKey);
+            
+            // Initialize previous LTP value
+            previousLtpValues.put(instrumentKey, liveStock.getLtp());
+            
             stocksData.add(new LiveStockWrapper(liveStock, stock));
         }
+        
         this.setItems(stocksData);
     }
 

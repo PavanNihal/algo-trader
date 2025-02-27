@@ -90,6 +90,15 @@
     -fx-text-fill: white;
 }
 
+/* LTP Flash Effects */
+.price-up-flash {
+    -fx-background-color: rgba(0, 255, 0, 0.4);
+}
+
+.price-down-flash {
+    -fx-background-color: rgba(255, 0, 0, 0.4);
+}
+
 /* Split Pane */
 .split-pane {
     -fx-background-color: transparent;
