@@ -31,7 +31,7 @@ public class LoginFrame extends StackPane {
         });
 
         // Create the scene
-        Scene scene = new Scene(this, 600, 400);
+        Scene scene = new Scene(this, 500, 350);
         String cssPath = getClass().getResource("/css/main.css").toExternalForm();
         scene.getStylesheets().add(cssPath);
         
@@ -47,6 +47,6 @@ public class LoginFrame extends StackPane {
         // Apply the scene to the existing stage
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("Algo Trader");
-        primaryStage.setMaximized(true);
+        // Don't maximize the window to keep it 40% smaller
     }
 }

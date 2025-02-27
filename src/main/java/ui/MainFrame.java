@@ -21,8 +21,8 @@ public class MainFrame extends StackPane {
         // Add panel to the StackPane
         getChildren().add(homePanel);
         
-        // Create the scene
-        Scene scene = new Scene(this, 1200, 800);
+        // Create the scene - 40% smaller than original 1200x800
+        Scene scene = new Scene(this, 720, 480); // 60% of original size
         String cssPath = getClass().getResource("/css/main.css").toExternalForm();
         scene.getStylesheets().add(cssPath);
         setSceneRef(scene);
