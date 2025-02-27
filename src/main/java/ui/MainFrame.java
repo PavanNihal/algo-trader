@@ -35,16 +35,16 @@ public class MainFrame extends StackPane {
         Scene scene = new Scene(this, 1200, 800);
         String cssPath = getClass().getResource("/css/main.css").toExternalForm();
         scene.getStylesheets().add(cssPath);
-        setScene(scene);
+        setSceneRef(scene);
     }
     
     private Scene mainScene;
     
-    private void setScene(Scene scene) {
+    private void setSceneRef(Scene scene) {
         this.mainScene = scene;
     }
     
-    public Scene getScene() {
+    public Scene getMainScene() {
         return mainScene;
     }
 }

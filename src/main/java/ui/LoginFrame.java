@@ -42,7 +42,7 @@ public class LoginFrame extends StackPane {
     private void launchMainApplication(String token) {
         // Create and show the main application frame
         MainFrame mainFrame = new MainFrame(token, dbManager);
-        Scene mainScene = mainFrame.getScene();
+        Scene mainScene = mainFrame.getMainScene();
         
         // Apply the scene to the existing stage
         primaryStage.setScene(mainScene);
