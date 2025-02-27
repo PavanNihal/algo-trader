@@ -1,7 +1,7 @@
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import ui.MainFrame;
+import ui.LoginFrame;
 
 import java.sql.SQLException;
 
@@ -18,10 +18,8 @@ public class UITest extends Application {
             DatabaseManager dbManager = DatabaseManager.getInstance();
             dbManager.initDatabase();
             
-            // Initialize UI
-            MainFrame mainFrame = new MainFrame(dbManager);
-            primaryStage.setTitle("Algo Trader");
-            primaryStage.setScene(mainFrame.getScene());
+            // Start with the login frame
+            new LoginFrame(primaryStage, dbManager);
             primaryStage.show();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,45 +1,50 @@
 package ui;
 
-import authentication.Authenticator.Status;
+import api.LiveFeedManager;
+import api.LiveFeederFactory;
+import authentication.AccessTokenExpiredException;
 import database.DatabaseManager;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 
 public class MainFrame extends StackPane {
 
-    private LoginPage loginPage;
     private HomePanel homePanel;
+    private String authToken;
+    private DatabaseManager dbManager;
 
-    public MainFrame(DatabaseManager dbManager) {
-        loginPage = new LoginPage();
-        homePanel = new HomePanel(dbManager);
-
-        // Add both pages to the StackPane
-        getChildren().addAll(loginPage, homePanel);
-
-        showLoginPage();
-
-        // Register authentication listener
-        loginPage.setAuthenticationListener(status -> {
-            if (status == Status.SUCCESS) {
-                homePanel.initializeAfterLogin();
-                showHomePage();
-            }
-        });
-
+    public MainFrame(String authToken, DatabaseManager dbManager) {
+        this.authToken = authToken;
+        this.dbManager = dbManager;
+        
+        // Initialize LiveFeedManager with token
+        LiveFeedManager liveFeedManager = LiveFeederFactory.getInstance();
+        try {
+            liveFeedManager.setAccessToken(authToken);
+        } catch (AccessTokenExpiredException e) {
+            e.printStackTrace();
+        }
+        
+        // Initialize main application components with the token
+        homePanel = new HomePanel(dbManager, liveFeedManager);
+        
+        // Add panel to the StackPane
+        getChildren().add(homePanel);
+        
         // Create the scene
-        Scene scene = new Scene(this, 1000, 800);
+        Scene scene = new Scene(this, 1200, 800);
         String cssPath = getClass().getResource("/css/main.css").toExternalForm();
         scene.getStylesheets().add(cssPath);
+        setScene(scene);
     }
-
-    public void showLoginPage() {
-        loginPage.setVisible(true);
-        homePanel.setVisible(false);
+    
+    private Scene mainScene;
+    
+    private void setScene(Scene scene) {
+        this.mainScene = scene;
     }
-
-    public void showHomePage() {
-        loginPage.setVisible(false);
-        homePanel.setVisible(true);
+    
+    public Scene getScene() {
+        return mainScene;
     }
 }

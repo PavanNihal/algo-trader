@@ -4,24 +4,24 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 
-import java.sql.SQLException;
-
 import api.LiveFeedManager;
-import api.LiveFeederFactory;
-import authentication.AccessTokenExpiredException;
 import database.DatabaseManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
 import ui.watchlist.WatchlistPane;
+
 public class HomePanel extends BorderPane {
     private WatchlistPane watchlistPane;
     private PortfolioPane portfolioPane;
     private StrategyBuilderPane strategyBuilderPane;
     private SplitPane splitPane;
     private DatabaseManager dbManager;
+    private LiveFeedManager liveFeedManager;
 
-    public HomePanel(DatabaseManager dbManager) {
+    public HomePanel(DatabaseManager dbManager, LiveFeedManager liveFeedManager) {
         this.dbManager = dbManager;
+        this.liveFeedManager = liveFeedManager;
+        
         // Create the left side panel with options
         VBox leftPanel = new VBox(10); // 10 pixels spacing
         leftPanel.setPadding(new Insets(10));
@@ -40,8 +40,10 @@ public class HomePanel extends BorderPane {
 
         leftPanel.getChildren().addAll(watchlistBtn, portfolioBtn, strategyBtn);
 
-        // Initialize the content panes
+        // Initialize the content panes with token already available
         watchlistPane = new WatchlistPane(dbManager);
+        watchlistPane.init(liveFeedManager); // Initialize with the feed manager right away
+        
         portfolioPane = new PortfolioPane();
         strategyBuilderPane = new StrategyBuilderPane();
 
@@ -62,19 +64,5 @@ public class HomePanel extends BorderPane {
         });
 
         setCenter(splitPane);
-    }
-
-    public void initializeAfterLogin() {
-        LiveFeedManager liveFeedManager = LiveFeederFactory.getInstance();
-        try {
-            liveFeedManager.setAccessToken(dbManager.getToken());
-        } catch (AccessTokenExpiredException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        watchlistPane.init(liveFeedManager);
     }
 }
