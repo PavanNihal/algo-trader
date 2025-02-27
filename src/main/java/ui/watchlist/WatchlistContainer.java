@@ -70,6 +70,7 @@ public class WatchlistContainer extends VBox {
             private void setupCellComponents() {
                 // Apply style class (will be defined in CSS)
                 deleteButton.getStyleClass().add("delete-button");
+                label.getStyleClass().add("watchlist-label");
                 
                 // Ensure the stylesheet is loaded
                 getStylesheets().add(getClass().getResource("/css/watchlist.css").toExternalForm());

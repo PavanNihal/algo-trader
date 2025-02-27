@@ -37,7 +37,6 @@
 }
 
 .watchlist-view .list-cell {
-    -fx-text-fill: #555555;
     -fx-background-color: transparent;
     -fx-padding: 10 5;
     -fx-font-size: 13px;
@@ -49,22 +48,24 @@
 
 .watchlist-view .list-cell:hover {
     -fx-background-color: rgba(0, 0, 0, 0.05);
-    -fx-text-fill: #222222;
-}
-
-.watchlist-view .list-cell:hover .label {
-    -fx-text-fill: #222222;
 }
 
 .watchlist-view .list-cell:selected {
     -fx-background-color: transparent;
-    -fx-text-fill: #0096c9;
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 0 0 2 0;
     -fx-border-color: #0096c9;
 }
 
-.watchlist-view .list-cell:selected .label {
+.watchlist-view .watchlist-label {
+    -fx-text-fill: #555555;
+}
+
+.watchlist-view .watchlist-label:hover {
+    -fx-text-fill: #222222;
+}
+
+.watchlist-view .list-cell:selected .watchlist-label {
     -fx-text-fill: #0096c9;
     -fx-font-weight: bold;
 }
