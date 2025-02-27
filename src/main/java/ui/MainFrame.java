@@ -9,13 +9,8 @@ import javafx.scene.layout.StackPane;
 public class MainFrame extends StackPane {
 
     private HomePanel homePanel;
-    private String authToken;
-    private DatabaseManager dbManager;
-
+    
     public MainFrame(String authToken, DatabaseManager dbManager) {
-        this.authToken = authToken;
-        this.dbManager = dbManager;
-        
         // Initialize LiveFeedManager with token
         LiveFeedManager liveFeedManager = LiveFeederFactory.getInstance();
         liveFeedManager.setAccessToken(authToken);

@@ -8,8 +8,7 @@ public class WatchlistPane extends SplitPane {
     private final StockTable stocksTable;
     private final WatchlistContainer watchlistContainer;
     private final StockSearchContainer searchContainer;
-    private LiveFeedManager liveFeedManager;
-
+    
     public WatchlistPane(DatabaseManager dbManager) {
         // Load CSS file
         initializeStyles();
@@ -31,7 +30,6 @@ public class WatchlistPane extends SplitPane {
     }
 
     public void init(LiveFeedManager liveFeedManager) {
-        this.liveFeedManager = liveFeedManager;
         stocksTable.setLiveFeedManager(liveFeedManager);
         watchlistContainer.loadWatchlists();
         watchlistContainer.selectFirstWatchlist();

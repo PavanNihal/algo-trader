@@ -2,8 +2,6 @@ package ui.watchlist;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -34,7 +32,6 @@ public class StockTable extends TableView<LiveStockWrapper> {
     private List<String> currentInstruments;
     private int watchlistId;
     private Map<String, Double> previousLtpValues = new HashMap<>();
-    private Map<String, ChangeListener<Number>> ltpListeners = new HashMap<>();
 
     @FXML
     private TableColumn<LiveStockWrapper, String> nameColumn;

@@ -15,13 +15,8 @@ public class HomePanel extends BorderPane {
     private PortfolioPane portfolioPane;
     private StrategyBuilderPane strategyBuilderPane;
     private SplitPane splitPane;
-    private DatabaseManager dbManager;
-    private LiveFeedManager liveFeedManager;
-
+    
     public HomePanel(DatabaseManager dbManager, LiveFeedManager liveFeedManager) {
-        this.dbManager = dbManager;
-        this.liveFeedManager = liveFeedManager;
-        
         // Create the left side panel with options
         VBox leftPanel = new VBox(10); // 10 pixels spacing
         leftPanel.setPadding(new Insets(10));
