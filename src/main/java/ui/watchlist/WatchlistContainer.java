@@ -59,7 +59,7 @@ public class WatchlistContainer extends VBox {
 
     private void setupWatchlistCellFactory() {
         watchlistsView.setCellFactory(lv -> new javafx.scene.control.ListCell<Watchlist>() {
-            private final Button deleteButton = new Button("x");
+            private final Label deleteButton = new Label("✕");
             private final HBox cell = new HBox();
             private final Label label = new Label();
             
@@ -68,8 +68,14 @@ public class WatchlistContainer extends VBox {
             }
 
             private void setupCellComponents() {
+                // Apply style class (will be defined in CSS)
                 deleteButton.getStyleClass().add("delete-button");
+                
+                // Ensure the stylesheet is loaded
+                getStylesheets().add(getClass().getResource("/css/watchlist.css").toExternalForm());
+                
                 deleteButton.setVisible(false);
+                
                 cell.getChildren().addAll(label, deleteButton);
                 cell.setSpacing(10);
                 cell.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
@@ -80,7 +86,6 @@ public class WatchlistContainer extends VBox {
                 label.setMaxWidth(Double.MAX_VALUE);
                 HBox.setHgrow(label, Priority.ALWAYS);
                 
-                deleteButton.setMaxWidth(USE_PREF_SIZE);
                 HBox.setMargin(deleteButton, new javafx.geometry.Insets(0, 5, 0, 0));
             }
 
@@ -91,11 +96,13 @@ public class WatchlistContainer extends VBox {
                     setGraphic(null);
                 } else {
                     label.setText(item.getName());
-                    deleteButton.setOnAction(event -> {
+                    // Add click handler to the label
+                    deleteButton.setOnMouseClicked(event -> {
                         dbManager.deleteWatchlist(item);
                         watchlistsView.getItems().remove(item);
                     });
                     
+                    // Keep it visible at first to verify it's working
                     setOnMouseEntered(event -> deleteButton.setVisible(true));
                     setOnMouseExited(event -> deleteButton.setVisible(false));
                     

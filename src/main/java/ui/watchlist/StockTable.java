@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Button;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -121,10 +120,14 @@ public class StockTable extends TableView<LiveStockWrapper> {
 
         deleteColumn.setCellFactory(col -> {
             return new javafx.scene.control.TableCell<LiveStockWrapper, Node>() {
-                private final Button deleteButton = new Button("×");
+                private final Label deleteButton = new Label("✕");
                 private final HBox container = new HBox(deleteButton);
                 {
+                    // Apply CSS class
                     deleteButton.getStyleClass().add("delete-button");
+                    // Make sure stylesheet is loaded
+                    getStylesheets().add(getClass().getResource("/css/watchlist.css").toExternalForm());
+                    
                     deleteButton.setVisible(false);
                     container.setAlignment(javafx.geometry.Pos.CENTER);
                     
@@ -140,7 +143,7 @@ public class StockTable extends TableView<LiveStockWrapper> {
                         }
                     });
                     
-                    deleteButton.setOnAction(event -> {
+                    deleteButton.setOnMouseClicked(event -> {
                         LiveStockWrapper stockWrapper = getTableView().getItems().get(getIndex());
                         handleDeleteStock(stockWrapper);
                     });
